@@ -1,0 +1,132 @@
+<template>
+  <div class="sidebar-container">
+    <div class="profile-data">
+      <div class="profile-name">
+        Admin GoBus
+      </div>
+    </div>
+    <div class="tabs">
+      <div
+        class="tab"
+        v-for="(item, i) in sidebars"
+        :key="i"
+        :class="{ active: isActive(item) }"
+        @click="navToRoute(item)"
+      >
+        <v-icon :color="isActive(item) ? 'white' : 'blue darken-1'">{{ item.icon }}</v-icon>
+        <span>{{ item.name }}</span>
+      </div>
+    </div>
+    <div class="sign-out" @click="logOut">
+      <v-icon color="red" class="icon-logout">mdi-logout</v-icon>
+      <span>Выход</span>
+    </div>
+  </div>
+</template>
+
+<script>
+import {LoginService} from "@/services/login.service";
+
+export default {
+	data() {
+		return {
+			sidebars: [
+				{
+					name: 'Пассажиры',
+					route: '/manage',
+					icon: 'mdi-account-group'
+				},
+				{
+					name: 'Водители',
+					route: '/manage/driver',
+					icon: 'mdi-car'
+				},
+				{
+					name: 'Рейсы',
+					route: '/manage/trip',
+					icon: 'mdi-map-clock'
+				},
+				{
+					name: 'Остановки',
+					route: '/manage/stops',
+					icon: 'mdi-bus-stop'
+				},
+				{
+					name: 'Аналитика',
+					route: '/manage/analytics',
+					icon: 'mdi-poll'
+				},
+			]
+		};
+	},
+	methods: {
+		isActive(item) {
+			return this.$route.path === item.route;
+		},
+		navToRoute(item) {
+		  if (!this.isActive(item)) {
+				this.$router.push(item.route);
+			}
+		},
+		logOut() {
+			LoginService.onLogOut();
+		}
+	}
+};
+</script>
+
+<style lang="scss" scoped>
+.sidebar-container {
+  width: 250px;
+  border-right: 1px solid #bfbfbf;
+  padding: 20px 10px 0;
+  .profile-data {
+    border-bottom: 1px solid #E9EAEE;
+    margin-bottom: 14px;
+    padding-bottom: 5px;
+    .profile-name {
+      font-weight: 500;
+      font-size: 20px;
+      padding: 8px 0;
+      text-align: center;
+    }
+  }
+  .tabs {
+    .tab {
+      font-weight: 500;
+      font-size: 16px;
+      display: flex;
+      align-items: center;
+      margin-bottom: 5px;
+      padding: 8px 5px 8px 15px;
+      cursor: pointer;
+      &.active {
+        background: #1E88E5;
+        color: #fff;
+        border-radius: 4px;
+      }
+      span {
+        margin-left: 25px;
+      }
+    }
+  }
+  .sign-out {
+    position: fixed;
+    bottom: 0;
+    width: 225px;
+    display: flex;
+    justify-content: center;
+    border-top: 1px solid #A6ACBB;
+    padding: 12px 0;
+    font-weight: 500;
+    font-size: 16px;
+    cursor: pointer;
+    background: #fff;
+    .icon-logout {
+      transform: rotate(180deg);
+      margin-right: 5px;
+    }
+  }
+}
+</style>
+
