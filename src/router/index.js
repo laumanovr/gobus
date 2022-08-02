@@ -1,29 +1,77 @@
-import Vue from 'vue'
-import VueRouter from 'vue-router'
-import HomeView from '../views/HomeView.vue'
+import Vue from 'vue';
+import VueRouter from 'vue-router';
+import Login from '../views/LoginPage.vue';
+// import {checkPermission} from "@/utils/checkPermission";
 
-Vue.use(VueRouter)
+const isComponent = (path) => () => import(`@/views/manage/${path}.vue`);
+
+Vue.use(VueRouter);
 
 const routes = [
-  {
-    path: '/',
-    name: 'home',
-    component: HomeView
-  },
-  {
-    path: '/about',
-    name: 'about',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/AboutView.vue')
-  }
-]
+	{
+		path: '/',
+		name: 'login',
+		component: Login,
+		meta: {
+			requireAuth: false
+		}
+	},
+
+	{
+		path: '/manage',
+		component: isComponent('AdminManage'),
+		// beforeEnter: (to, from, next) => {
+		//   checkPermission(to, from, next)
+		// },
+		children: [
+			{
+				path: '',
+				name: 'passenger',
+				component: isComponent('AdminPassenger'),
+				meta: {
+					requireAuth: true
+				}
+			},
+			{
+				path: 'driver',
+				name: 'driver',
+				component: isComponent('AdminDriver'),
+				meta: {
+					requireAuth: true
+				}
+			},
+			{
+				path: 'trip',
+				name: 'trip',
+				component: isComponent('AdminTrip'),
+				meta: {
+					requireAuth: true
+				}
+			},
+			{
+				path: 'stops',
+				name: 'stops',
+				component: isComponent('AdminStop'),
+				meta: {
+					requireAuth: true
+				}
+			},
+			{
+				path: 'analytics',
+				name: 'analytics',
+				component: isComponent('AdminAnalytics'),
+				meta: {
+					requireAuth: true
+				}
+			}
+		]
+	}
+];
 
 const router = new VueRouter({
-  mode: 'history',
-  base: process.env.BASE_URL,
-  routes
-})
+	mode: 'history',
+	// base: process.env.BASE_URL,
+	routes
+});
 
-export default router
+export default router;
