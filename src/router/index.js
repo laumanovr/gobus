@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
 import Login from '../views/LoginPage.vue';
-// import {checkPermission} from "@/utils/checkPermission";
+import {checkPermission} from "@/utils/checkPermission";
 
 const isComponent = (path) => () => import(`@/views/manage/${path}.vue`);
 
@@ -20,9 +20,9 @@ const routes = [
 	{
 		path: '/manage',
 		component: isComponent('AdminManage'),
-		// beforeEnter: (to, from, next) => {
-		//   checkPermission(to, from, next)
-		// },
+		beforeEnter: (to, from, next) => {
+		  checkPermission(to, from, next);
+		},
 		children: [
 			{
 				path: '',
