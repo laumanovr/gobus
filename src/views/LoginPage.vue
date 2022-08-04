@@ -1,13 +1,13 @@
 <template>
   <div class="login-container">
-    <v-form class="login-form" ref="loginForm">
+    <v-form class="login-form" ref="loginForm" @submit.prevent="submitForm">
       <h2>Go Bus Admin</h2>
       <div>
         <v-text-field
           outlined
           label="Логин"
           autocomplete="new-password"
-          v-model="loginData.login"
+          v-model="loginData.email"
           :rules="requiredRule"
         />
       </div>
@@ -22,7 +22,7 @@
         />
       </div>
       <div class="align-center">
-        <v-btn color="primary" large class="full-width" @click="submitForm">Войти</v-btn>
+        <v-btn color="primary" large class="full-width" type="submit">Войти</v-btn>
       </div>
     </v-form>
   </div>
@@ -36,7 +36,7 @@ export default {
 		return {
 			requiredRule: [(v) => !!v || 'Обязательное поле'],
 			loginData: {
-				login: '',
+				email: '',
 				password: ''
 			}
 		};
@@ -47,10 +47,9 @@ export default {
 			  try {
 					await this.$store.dispatch('LoaderStore/setLoader', true);
 			    await LoginService.onLogin(this.loginData);
-					this.$store.dispatch('LoaderStore/setLoader', false);
+					await this.$store.dispatch('LoaderStore/setLoader', false);
 				} catch (err) {
-					console.log(err);
-					this.$store.dispatch('LoaderStore/setLoader', false);
+					await this.$store.dispatch('LoaderStore/setLoader', false);
 					this.$toast.error('Неправильный логин или пароль');
 				}
 			}
