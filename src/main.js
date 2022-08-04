@@ -4,10 +4,12 @@ import router from './router';
 import store from './store';
 import vuetify from './plugins/vuetify';
 import VModal from 'vue-js-modal';
+import VueToast from 'vue-toast-notification';
 import './assets/styles/main.scss';
 
 Vue.config.productionTip = false;
 Vue.use(VModal);
+Vue.use(VueToast, {position: 'top-right', duration: 2000});
 
 new Vue({
 	router,
