@@ -5,12 +5,12 @@ export class DriverService {
 	}
 
 	static fetchDriverList() {
-		const url = '';
+		const url = 'drivers';
 		return sendGetRequest(url);
 	}
 
 	static createDriver(body) {
-		const url = '';
+		const url = 'drivers';
 		return sendPostRequest(url, body);
 	}
 
