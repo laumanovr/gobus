@@ -49,9 +49,9 @@ const routes = [
 				}
 			},
 			{
-				path: 'stops',
-				name: 'stops',
-				component: isComponent('AdminStop'),
+				path: 'stations',
+				name: 'stations',
+				component: isComponent('AdminStation'),
 				meta: {
 					requireAuth: true
 				}

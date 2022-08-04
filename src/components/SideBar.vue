@@ -48,7 +48,7 @@ export default {
 				},
 				{
 					name: 'Остановки',
-					route: '/manage/stops',
+					route: '/manage/stations',
 					icon: 'mdi-bus-stop'
 				},
 				{
