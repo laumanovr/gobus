@@ -1,4 +1,5 @@
-import {sendPostRequest, sendGetRequest, sendDeleteRequest, sendPatchRequest} from "@/services/api.service";
+// eslint-disable-next-line no-unused-vars
+import {sendPostRequest, sendGetRequest, sendPatchRequest} from "@/services/api.service";
 
 export class DriverService {
 	constructor() {
@@ -9,18 +10,18 @@ export class DriverService {
 		return sendGetRequest(url);
 	}
 
-	static createDriver(body) {
+	static create(body) {
 		const url = 'drivers';
 		return sendPostRequest(url, body);
 	}
 
-	static updateDriver(body) {
-		const url = '';
+	static update(body, id) {
+		const url = `drivers/${id}`;
 		return sendPatchRequest(url, body);
 	}
 
-	static deleteDriver(id) {
-		const url = '';
-		return sendDeleteRequest(url, id);
+	static delete(id) {
+		const url = `drivers/${id}/archive`;
+		return sendPatchRequest(url, id);
 	}
 }
