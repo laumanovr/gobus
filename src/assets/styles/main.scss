@@ -25,6 +25,11 @@ h2 {
   padding: 15px;
 }
 
+.vertical-space {
+  display: block;
+  height: 20px;
+}
+
 .action-icon {
   cursor: pointer;
   &:nth-child(2) {
