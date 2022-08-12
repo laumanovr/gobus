@@ -15,8 +15,8 @@ export class DriverService {
 		return sendPostRequest(url, body);
 	}
 
-	static update(body, id) {
-		const url = `drivers/${id}`;
+	static update(body) {
+		const url = `drivers/${body.id}`;
 		return sendPatchRequest(url, body);
 	}
 
