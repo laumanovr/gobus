@@ -57,6 +57,14 @@ const routes = [
 				}
 			},
 			{
+				path: 'transport',
+				name: 'transport',
+				component: isComponent('AdminTransport'),
+				meta: {
+					requireAuth: true
+				}
+			},
+			{
 				path: 'analytics',
 				name: 'analytics',
 				component: isComponent('AdminAnalytics'),
