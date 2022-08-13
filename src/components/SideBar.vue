@@ -39,7 +39,7 @@ export default {
 				{
 					name: 'Водители',
 					route: '/manage/driver',
-					icon: 'mdi-car'
+					icon: 'mdi-card-account-details-outline'
 				},
 				{
 					name: 'Рейсы',
@@ -50,6 +50,11 @@ export default {
 					name: 'Остановки',
 					route: '/manage/stations',
 					icon: 'mdi-bus-stop'
+				},
+				{
+					name: 'Транспорт',
+					route: '/manage/transport',
+					icon: 'mdi-train-car'
 				},
 				{
 					name: 'Аналитика',
