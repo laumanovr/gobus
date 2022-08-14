@@ -49,7 +49,9 @@ export default {
 			stationList: [],
 			mode: '',
 			station: {
-				name: ''
+				name: '',
+				lat: '42.9079977',
+				lng: '74.6048946'
 			}
 		};
 	},
