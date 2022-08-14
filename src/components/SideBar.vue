@@ -47,6 +47,11 @@ export default {
 					icon: 'mdi-map-clock'
 				},
 				{
+					name: 'Маршруты',
+					route: '/manage/itinerary',
+					icon: 'mdi-map-marker-path'
+				},
+				{
 					name: 'Остановки',
 					route: '/manage/stations',
 					icon: 'mdi-bus-stop'
