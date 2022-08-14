@@ -64,7 +64,7 @@
           :rules="requiredRule"
         />
         <v-text-field label="Цена" type="number" v-model="trip.price" :rules="requiredRule"/>
-        <v-text-field label="Время выезда" v-model="trip.startTime" :rules="requiredRule"/>
+        <v-text-field v-mask="'##:##'" placeholder="00:00" label="Время выезда" v-model="timeStart" :rules="requiredRule"/>
       </v-form>
       <div class="align-center">
         <v-btn color="red" class="white--text" @click="toggleTripModal">Отмена</v-btn>
@@ -89,6 +89,7 @@ export default {
 			transports: [],
 			mode: '',
 			tripList: [],
+			timeStart: '',
 			trip: {
 				itineraryId: '',
 				driverId: '',
@@ -109,7 +110,10 @@ export default {
 	    try {
 	      await this.$store.dispatch('LoaderStore/setLoader', true);
 				const resp = await TripService.fetchTripList();
-				this.tripList = resp?.data?.trips;
+				this.tripList = resp?.data?.trips.map((trip) => {
+				  trip.startTime = new Date(trip.startTime).toLocaleString('ru').slice(0, 17);
+					return trip;
+				});
 				await this.$store.dispatch('LoaderStore/setLoader', false);
 			} catch (err) {
 	      this.$toast.error(err);
@@ -176,8 +180,10 @@ export default {
 			this.$modal.toggle('tripModal');
 		},
 		async submitTrip() {
-	    if (this.$refs.tripForm.validate()) {
+			if (this.$refs.tripForm.validate()) {
 	      try {
+					const today = new Date().toLocaleDateString('en-CA');
+					this.trip.startTime = new Date(`${today}T${this.timeStart}`);
 	        await this.$store.dispatch('LoaderStore/setLoader', true);
 					await TripService[this.mode](this.trip);
 					await this.getTripList();
