@@ -49,6 +49,14 @@ const routes = [
 				}
 			},
 			{
+				path: 'itinerary',
+				name: 'itinerary',
+				component: isComponent('AdminItinerary'),
+				meta: {
+					requireAuth: true
+				}
+			},
+			{
 				path: 'stations',
 				name: 'stations',
 				component: isComponent('AdminStation'),
