@@ -50,8 +50,8 @@ export default {
 			mode: '',
 			station: {
 				name: '',
-				lat: '42.9079977',
-				lng: '74.6048946'
+				lat: 42.9079977,
+				lng: 74.6048946
 			}
 		};
 	},
