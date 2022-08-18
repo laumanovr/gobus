@@ -1,4 +1,4 @@
-import {sendGetRequest, sendPostRequest} from "@/services/api.service";
+import {sendGetRequest, sendPatchRequest, sendPostRequest} from "@/services/api.service";
 
 export class TripService {
 	constructor() {}
@@ -12,4 +12,9 @@ export class TripService {
 		const url = 'trips';
 		return sendPostRequest(url, body);
 	}
+
+  static update(body) {
+    const url = `trips/${body.id}`;
+    return sendPatchRequest(url, body);
+  }
 }

@@ -27,7 +27,7 @@
         <td>{{ trip.price }}</td>
         <td>{{ trip.availableSeatsCount }}/{{ trip.vehicle.capacity }}</td>
         <td>
-<!--          <v-icon color="primary" class="action-icon" @click="toggleTripModal('update', trip)">mdi-lead-pencil</v-icon>-->
+          <v-icon color="primary" class="action-icon" @click="toggleTripModal('update', trip)">mdi-lead-pencil</v-icon>
 <!--          <v-icon color="red" class="action-icon">mdi-delete</v-icon>-->
         </td>
       </tr>
