@@ -13,8 +13,8 @@ export class TripService {
 		return sendPostRequest(url, body);
 	}
 
-  static update(body) {
-    const url = `trips/${body.id}`;
-    return sendPatchRequest(url, body);
-  }
+	static update(body) {
+		const url = `trips/${body.id}`;
+		return sendPatchRequest(url, body);
+	}
 }
