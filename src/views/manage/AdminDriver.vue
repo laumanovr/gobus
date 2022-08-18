@@ -42,7 +42,7 @@
         <v-text-field label="Номер" type="number" v-model="driver.mobileNumber" :rules="requiredRule"/>
         <v-text-field label="E-Mail" v-model="driver.email" :rules="emailRule"/>
         <v-text-field label="Права" v-model="driver.driverLicense" :rules="requiredRule"/>
-        <v-text-field label="Пароль" v-model="driver.password" disabled/>
+        <v-text-field label="Пароль" v-model="driver.password" :rules="requiredRule"/>
       </v-form>
       <div class="align-center">
         <v-btn color="red" class="white--text" @click="toggleDriverModal">Отмена</v-btn>
@@ -73,7 +73,7 @@ export default {
 			mode: '',
 			driver: {
 				email: '',
-				password: 'gobus',
+				password: '',
 				name: '',
 				surname: '',
 				mobileNumber: '',
