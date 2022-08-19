@@ -1,6 +1,50 @@
 <template>
   <div class="trip-container">
     <h2>Рейсы</h2>
+    <div class="d-flex align-center filter">
+      <v-menu
+        v-model="filter.filterDatePicker"
+        :close-on-content-click="false"
+        :nudge-right="40"
+        transition="scale-transition"
+        offset-y
+        min-width="290px"
+      >
+        <template v-slot:activator="{ on, attrs }">
+          <v-text-field
+            dense
+            solo
+            class="short"
+            label="Дата"
+            readonly
+            v-bind="attrs"
+            v-on="on"
+            v-model="filter.formatDate"
+            hide-details
+            clearable
+            @click:clear="filter.date=''"
+          />
+        </template>
+        <v-date-picker
+          locale="ru-RU"
+          v-model="filter.date"
+          @input="onFilterDate"
+        />
+      </v-menu>
+      <v-select
+        dense
+        solo
+        hide-details
+        class="short"
+        label="Водитель"
+        :items="drivers"
+        item-text="fullName"
+        item-value="id"
+        v-model="filter.driverId"
+        clearable
+      />
+      <v-btn color="primary" @click="getTripList">Фильтр</v-btn>
+    </div>
     <div class="align-right">
       <v-btn color="primary" @click="toggleTripModal('create')">Добавить +</v-btn>
     </div>
@@ -128,6 +172,12 @@ export default {
 				vehicleId: '',
 				price: '',
 				startTime: ''
+			},
+			filter: {
+			  date: '',
+				formatDate: '',
+				driverId: '',
+				filterDatePicker: false
 			}
 		};
 	},
@@ -141,7 +191,7 @@ export default {
 	  async getTripList() {
 	    try {
 	      await this.$store.dispatch('LoaderStore/setLoader', true);
-				const resp = await TripService.fetchTripList();
+				const resp = await TripService.fetchTripList(this.filter.date, this.filter.driverId);
 				this.tripList = resp?.data?.trips.map((trip) => {
 				  trip.dateAndTime = new Date(trip.startTime).toLocaleString('ru').slice(0, 17);
 					return trip;
@@ -226,6 +276,10 @@ export default {
 			this.dateStart = new Date(this.pickerDate).toLocaleDateString('ru-RU');
 			this.showDatePicker = false;
 		},
+		onFilterDate() {
+	    this.filter.formatDate = new Date(this.filter.date).toLocaleDateString('ru-RU');
+	    this.filter.filterDatePicker = false;
+		},
 		async submitTrip() {
 			if (this.$refs.tripForm.validate()) {
 	      try {
@@ -244,3 +298,11 @@ export default {
 	}
 };
 </script>
+
+<style lang="scss">
+.trip-container {
+  .filter {
+    max-width: 630px;
+  }
+}
+</style>
