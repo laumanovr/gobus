@@ -10,12 +10,14 @@
   "dependencies": {
     "axios": "^0.27.2",
     "core-js": "^3.8.3",
+    "leaflet": "^1.8.0",
     "register-service-worker": "^1.7.2",
     "v-mask": "^2.3.0",
     "vue": "^2.6.14",
     "vue-js-modal": "^2.0.1",
     "vue-router": "^3.5.1",
     "vue-toast-notification": "^0.6.3",
+    "vue2-leaflet": "^2.7.1",
     "vuetify": "^2.6.0",
     "vuex": "^3.6.2"
   },
