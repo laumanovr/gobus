@@ -69,16 +69,21 @@
         <td>{{ trip.driver.surname + ' ' + trip.driver.name }}</td>
         <td>{{ trip.vehicle.name }}</td>
         <td>{{ trip.price }}</td>
-        <td>{{ trip.availableSeatsCount }}/{{ trip.vehicle.capacity }}</td>
+        <td>
+          <span @click="getBookings(trip)" class="cursor-pointer">
+            {{ trip.availableSeatsCount }}/{{ trip.vehicle.capacity }}
+          </span>
+        </td>
         <td>
           <v-icon color="primary" class="action-icon" @click="toggleTripModal('update', trip)" title="Редактировать">mdi-lead-pencil</v-icon>
           <v-icon color="success" class="action-icon" title="Дублировать" @click="toggleTripModal('copy', trip)">mdi-refresh</v-icon>
-<!--          <v-icon color="red" class="action-icon">mdi-delete</v-icon>-->
+          <!--<v-icon color="red" class="action-icon">mdi-delete</v-icon>-->
         </td>
       </tr>
       </tbody>
     </table>
 
+    <!--Trip Modal-->
     <modal name="tripModal" height="auto">
       <div class="align-center">
         <h3>{{ mode === 'create' ? 'Добавить Рейс' : 'Редактировать Рейс' }}</h3>
@@ -143,6 +148,35 @@
         <v-btn color="success" @click="submitTrip">Подтвердить</v-btn>
       </div>
     </modal>
+
+    <!--Booking Modal-->
+    <modal name="bookingModal" height="auto" width="700px">
+      <div class="align-center">
+        <h3>Список пассажиров</h3>
+      </div>
+      <table class="table no-border">
+        <thead>
+          <tr>
+            <th>№</th>
+            <th>ФИО</th>
+            <th>Телефон</th>
+            <th>Статус</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="(booking, i) in bookingList" :key="i">
+            <td>{{ i + 1 }}</td>
+            <td>{{ booking.user.surname + ' ' + booking.user.name }}</td>
+            <td>{{ booking.user.mobileNumber }}</td>
+            <td>{{ booking.status }}</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="vertical-space"></div>
+      <div class="align-center">
+        <v-btn color="primary" @click="toggleBookingModal">Закрыть</v-btn>
+      </div>
+    </modal>
   </div>
 </template>
 
@@ -151,6 +185,7 @@ import {TripService} from "@/services/trip.service";
 import {ItineraryService} from "@/services/itinerary.service";
 import {DriverService} from "@/services/driver.service";
 import {TransportService} from "@/services/transport.service";
+import {BookingService} from "@/services/booking.service";
 
 export default {
 	data() {
@@ -178,7 +213,8 @@ export default {
 				formatDate: '',
 				driverId: '',
 				filterDatePicker: false
-			}
+			},
+			bookingList: []
 		};
 	},
 	async mounted() {
@@ -294,6 +330,21 @@ export default {
 					await this.$store.dispatch('LoaderStore/setLoader', false);
 				}
 			}
+		},
+		async getBookings(trip) {
+	    try {
+				await this.$store.dispatch('LoaderStore/setLoader', true);
+	      const resp = await BookingService.fetchBookings(trip.id);
+				this.bookingList = resp?.data?.bookings;
+				await this.$store.dispatch('LoaderStore/setLoader', false);
+				this.toggleBookingModal();
+			} catch (err) {
+	      this.$toast.error(err);
+				await this.$store.dispatch('LoaderStore/setLoader', false);
+			}
+		},
+		toggleBookingModal() {
+	    this.$modal.toggle('bookingModal');
 		}
 	}
 };
