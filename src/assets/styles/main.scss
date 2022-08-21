@@ -46,6 +46,10 @@ hr {
   }
 }
 
+.cursor-pointer {
+  cursor: pointer;
+}
+
 .table {
   background: #fff;
   border: 1px solid gray;
@@ -62,5 +66,8 @@ hr {
     padding: 15px 10px;
     font-size: 12px;
     text-align: center;
+  }
+  &.no-border {
+    border: 0;
   }
 }
