@@ -43,45 +43,62 @@
         v-model="filter.driverId"
         clearable
       />
-      <v-btn color="primary" @click="getTripList">Фильтр</v-btn>
+      <v-btn color="primary" @click="onFilterTrips">Фильтр</v-btn>
     </div>
     <div class="align-right">
       <v-btn color="primary" @click="toggleTripModal('create')">Добавить +</v-btn>
     </div>
-    <table class="table" v-if="tripList.length">
-      <thead>
-      <tr>
-        <th>№</th>
-        <th>Маршрут</th>
-        <th>Время выезда</th>
-        <th>Водитель</th>
-        <th>Машина</th>
-        <th>Цена</th>
-        <th>Кол-во мест</th>
-        <th></th>
-      </tr>
-      </thead>
-      <tbody>
-      <tr v-for="(trip, i) in tripList" :key="trip.id">
-        <td>{{ i + 1 }}</td>
-        <td><div v-for="(item, i) in trip.itinerary.items" :key="i">{{ item.station.name }}</div></td>
-        <td>{{ trip.dateAndTime }}</td>
-        <td>{{ trip.driver.surname + ' ' + trip.driver.name }}</td>
-        <td>{{ trip.vehicle.name }}</td>
-        <td>{{ trip.price }}</td>
-        <td>
+    <template v-if="tripList.length">
+      <table class="table">
+        <thead>
+        <tr>
+          <th>№</th>
+          <th>Маршрут</th>
+          <th>Время выезда</th>
+          <th>Водитель</th>
+          <th>Машина</th>
+          <th>Цена</th>
+          <th>Кол-во мест</th>
+          <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr v-for="(trip, i) in tripList" :key="trip.id">
+          <td>{{ i + 1 }}</td>
+          <td>
+            <div v-for="(item, i) in trip.itinerary.items" :key="i">{{ item.station.name }}</div>
+          </td>
+          <td>{{ trip.dateAndTime }}</td>
+          <td>{{ trip.driver.surname + ' ' + trip.driver.name }}</td>
+          <td>{{ trip.vehicle.name }}</td>
+          <td>{{ trip.price }}</td>
+          <td>
           <span @click="getBookings(trip)" class="cursor-pointer">
             {{ trip.availableSeatsCount }}/{{ trip.vehicle.capacity }}
           </span>
-        </td>
-        <td>
-          <v-icon color="primary" class="action-icon" @click="toggleTripModal('update', trip)" title="Редактировать">mdi-lead-pencil</v-icon>
-          <v-icon color="success" class="action-icon" title="Дублировать" @click="toggleTripModal('copy', trip)">mdi-refresh</v-icon>
-          <!--<v-icon color="red" class="action-icon">mdi-delete</v-icon>-->
-        </td>
-      </tr>
-      </tbody>
-    </table>
+          </td>
+          <td>
+            <v-icon color="primary" class="action-icon" @click="toggleTripModal('update', trip)" title="Редактировать">
+              mdi-lead-pencil
+            </v-icon>
+            <v-icon color="success" class="action-icon" title="Дублировать" @click="toggleTripModal('copy', trip)">
+              mdi-refresh
+            </v-icon>
+            <!--<v-icon color="red" class="action-icon">mdi-delete</v-icon>-->
+          </td>
+        </tr>
+        </tbody>
+      </table>
+      <div class="vertical-space"></div>
+      <div class="text-center" v-if="totalTripCount > 1">
+        <v-pagination
+          v-model="page"
+          :length="totalTripCount"
+          :total-visible="10"
+          @input="onPaginate"
+        />
+      </div>
+    </template>
 
     <!--Trip Modal-->
     <modal name="tripModal" height="auto">
@@ -190,12 +207,14 @@ import {BookingService} from "@/services/booking.service";
 export default {
 	data() {
 		return {
+		  page: 1,
 			requiredRule: [(v) => !!v || 'Обязательное поле'],
 		  itineraries: [],
 			drivers: [],
 			transports: [],
 			mode: '',
 			tripList: [],
+			totalTripCount: 0,
 			timeStart: '',
 			showDatePicker: false,
 			pickerDate: '',
@@ -214,6 +233,7 @@ export default {
 				driverId: '',
 				filterDatePicker: false
 			},
+			queryParam: '',
 			bookingList: []
 		};
 	},
@@ -227,7 +247,8 @@ export default {
 	  async getTripList() {
 	    try {
 	      await this.$store.dispatch('LoaderStore/setLoader', true);
-				const resp = await TripService.fetchTripList(this.filter.date, this.filter.driverId);
+				const resp = await TripService.fetchTripList(this.queryParam);
+				this.totalTripCount = Math.ceil(resp.count / 10);
 				this.tripList = resp?.data?.trips.map((trip) => {
 				  trip.dateAndTime = new Date(trip.startTime).toLocaleString('ru').slice(0, 17);
 					return trip;
@@ -237,6 +258,19 @@ export default {
 	      this.$toast.error(err);
 				await this.$store.dispatch('LoaderStore/setLoader', false);
 			}
+		},
+		onFilterTrips() {
+			const date = this.filter.date ? `&date=${this.filter.date}` : '';
+			const driver = this.filter.driverId ? `&driverId=${this.filter.driverId}` : '';
+			this.queryParam = `${date}${driver}`;
+			this.page = 1;
+			this.getTripList();
+		},
+		onPaginate(page) {
+			const date = this.filter.date ? `&date=${this.filter.date}` : '';
+			const driver = this.filter.driverId ? `&driverId=${this.filter.driverId}` : '';
+	    this.queryParam = `&page=${page}` + `${date}${driver}`;
+			this.getTripList();
 		},
 		async getItineraries() {
 			try {
