@@ -74,7 +74,7 @@
           <td>{{ trip.price }}</td>
           <td>
           <span @click="getBookings(trip)" class="cursor-pointer">
-            {{ trip.availableSeatsCount }}/{{ trip.vehicle.capacity }}
+            {{ trip.vehicle.capacity - trip.availableSeatsCount }}/{{ trip.vehicle.capacity }}
           </span>
           </td>
           <td>
