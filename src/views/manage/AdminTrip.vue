@@ -64,7 +64,7 @@
         </thead>
         <tbody>
         <tr v-for="(trip, i) in tripList" :key="trip.id">
-          <td>{{ i + 1 }}</td>
+          <td>{{ ((page - 1) * 10) + (i + 1) }}</td>
           <td>
             <div v-for="(item, i) in trip.itinerary.items" :key="i">{{ item.station.name }}</div>
           </td>
@@ -73,7 +73,7 @@
           <td>{{ trip.vehicle.name }}</td>
           <td>{{ trip.price }}</td>
           <td>
-          <span @click="getBookings(trip)" class="cursor-pointer">
+          <span @click="getBookings(trip)" class="show-bookings">
             {{ trip.vehicle.capacity - trip.availableSeatsCount }}/{{ trip.vehicle.capacity }}
           </span>
           </td>
@@ -252,7 +252,7 @@ export default {
 				this.tripList = resp?.data?.trips.map((trip) => {
 				  trip.dateAndTime = new Date(trip.startTime).toLocaleString('ru').slice(0, 17);
 					return trip;
-				});
+				}).reverse();
 				await this.$store.dispatch('LoaderStore/setLoader', false);
 			} catch (err) {
 	      this.$toast.error(err);
@@ -326,7 +326,7 @@ export default {
 		  if (mode && mode === 'update') {
 				this.trip.id = trip.id;
 				this.trip.driverId = trip.driver.id;
-				this.dateStart = new Date(trip.startTime).toLocaleDateString('ru')
+				this.dateStart = new Date(trip.startTime).toLocaleDateString('ru');
 				this.pickerDate = new Date(trip.startTime).toLocaleDateString('en-CA');
 				this.timeStart = new Date(trip.startTime).toLocaleTimeString('ru');
 			}
@@ -389,6 +389,14 @@ export default {
 .trip-container {
   .filter {
     max-width: 630px;
+  }
+  .show-bookings {
+    cursor: pointer;
+    text-decoration: underline;
+    color: #1A237E;
+    &:hover {
+      text-decoration: none;
+    }
   }
 }
 </style>
