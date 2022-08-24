@@ -22,7 +22,7 @@
             v-model="filter.formatDate"
             hide-details
             clearable
-            @click:clear="filter.date=''"
+            @click:clear="onClear('date')"
           />
         </template>
         <v-date-picker
@@ -42,6 +42,7 @@
         item-value="id"
         v-model="filter.driverId"
         clearable
+        @click:clear="onClear"
       />
       <v-btn color="primary" @click="onFilterTrips">Фильтр</v-btn>
     </div>
@@ -271,6 +272,12 @@ export default {
 			const driver = this.filter.driverId ? `&driverId=${this.filter.driverId}` : '';
 	    this.queryParam = `&page=${page}` + `${date}${driver}`;
 			this.getTripList();
+		},
+		onClear(val) {
+	    this.$nextTick(() => {
+				if (val === 'date') this.filter.date = '';
+				this.onFilterTrips();
+			});
 		},
 		async getItineraries() {
 			try {
