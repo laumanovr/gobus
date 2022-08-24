@@ -115,6 +115,7 @@
             v-model="trip.itineraryId"
             :rules="requiredRule"
           />
+          <v-text-field label="Цена" type="number" v-model="trip.price" :rules="requiredRule"/>
           <v-select
             label="Транспорт"
             :items="transports"
@@ -123,34 +124,7 @@
             v-model="trip.vehicleId"
             :rules="requiredRule"
           />
-          <v-text-field label="Цена" type="number" v-model="trip.price" :rules="requiredRule"/>
-          <v-menu
-            v-model="showDatePicker"
-            :close-on-content-click="false"
-            :nudge-right="40"
-            transition="scale-transition"
-            offset-y
-            min-width="290px"
-          >
-            <template v-slot:activator="{ on, attrs }">
-              <v-text-field
-                label="Дата выезда"
-                readonly
-                v-bind="attrs"
-                v-on="on"
-                v-model="dateStart"
-                :rules="requiredRule"
-              />
-            </template>
-            <v-date-picker
-              locale="ru-RU"
-              v-model="pickerDate"
-              :min="todayDate"
-              @input="onChangeDate"
-            />
-          </v-menu>
         </template>
-        <v-text-field v-mask="'##:##'" placeholder="00:00" label="Время выезда" v-model="timeStart" :rules="requiredRule"/>
         <v-select
           label="Водитель"
           :items="drivers"
@@ -159,6 +133,32 @@
           v-model="trip.driverId"
           :rules="requiredRule"
         />
+        <v-menu
+          v-model="showDatePicker"
+          :close-on-content-click="false"
+          :nudge-right="40"
+          transition="scale-transition"
+          offset-y
+          min-width="290px"
+        >
+          <template v-slot:activator="{ on, attrs }">
+            <v-text-field
+              label="Дата выезда"
+              readonly
+              v-bind="attrs"
+              v-on="on"
+              v-model="dateStart"
+              :rules="requiredRule"
+            />
+          </template>
+          <v-date-picker
+            locale="ru-RU"
+            v-model="pickerDate"
+            :min="todayDate"
+            @input="onChangeDate"
+          />
+        </v-menu>
+        <v-text-field v-mask="'##:##'" placeholder="00:00" label="Время выезда" v-model="timeStart" :rules="requiredRule"/>
       </v-form>
       <div class="align-center">
         <v-btn color="red" class="white--text" @click="toggleTripModal">Отмена</v-btn>
@@ -326,6 +326,7 @@ export default {
 		  if (mode && mode === 'update') {
 				this.trip.id = trip.id;
 				this.trip.driverId = trip.driver.id;
+				this.dateStart = new Date(trip.startTime).toLocaleDateString('ru')
 				this.pickerDate = new Date(trip.startTime).toLocaleDateString('en-CA');
 				this.timeStart = new Date(trip.startTime).toLocaleTimeString('ru');
 			}
