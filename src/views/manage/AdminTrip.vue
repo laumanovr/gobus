@@ -264,11 +264,11 @@ export default {
 				name: '',
 				surname: ''
 			},
-      status: {
+			status: {
 			  'PENDING': 'Оплата',
-        'CASH': 'Наличка',
-        'SCANNED': 'Отсканировано'
-      }
+				'CASH': 'Наличка',
+				'SCANNED': 'Отсканировано'
+			}
 		};
 	},
 	async mounted() {
