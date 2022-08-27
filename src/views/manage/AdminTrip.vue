@@ -190,7 +190,7 @@
             <td>{{ i + 1 }}</td>
             <td>{{ booking.surname + ' ' + booking.name }}</td>
             <!--<td>{{ booking.mobileNumber }}</td>-->
-            <td>{{ booking.status }}</td>
+            <td>{{ status[booking.status] }}</td>
           </tr>
           </tbody>
         </table>
@@ -263,7 +263,12 @@ export default {
 				seatsCount: 0,
 				name: '',
 				surname: ''
-			}
+			},
+      status: {
+			  'PENDING': 'Оплата',
+        'CASH': 'Наличка',
+        'SCANNED': 'Отсканировано'
+      }
 		};
 	},
 	async mounted() {
