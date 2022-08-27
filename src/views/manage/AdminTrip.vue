@@ -168,32 +168,49 @@
     </modal>
 
     <!--Booking Modal-->
-    <modal name="bookingModal" height="auto" width="700px">
+    <modal name="bookingModal" height="auto" width="700px" class="booking-modal">
       <div class="align-center">
-        <h3>Список пассажиров</h3>
+        <h3>{{ bookingMode === 'list' ? 'Список пассажиров' : 'Добавить пассажира' }}</h3>
       </div>
-      <table class="table no-border">
-        <thead>
+      <template v-if="bookingMode === 'list'">
+        <div class="align-right">
+          <v-btn color="primary" small @click="openBookingMode">Добавить пассажира</v-btn>
+        </div>
+        <table class="table no-border">
+          <thead>
           <tr>
             <th>№</th>
             <th>ФИО</th>
-            <th>Телефон</th>
+            <!--<th>Телефон</th>-->
             <th>Статус</th>
           </tr>
-        </thead>
-        <tbody>
+          </thead>
+          <tbody>
           <tr v-for="(booking, i) in bookingList" :key="i">
             <td>{{ i + 1 }}</td>
-            <td>{{ booking.user.surname + ' ' + booking.user.name }}</td>
-            <td>{{ booking.user.mobileNumber }}</td>
+            <td>{{ booking.surname + ' ' + booking.name }}</td>
+            <!--<td>{{ booking.mobileNumber }}</td>-->
             <td>{{ booking.status }}</td>
           </tr>
-        </tbody>
-      </table>
-      <div class="vertical-space"></div>
-      <div class="align-center">
-        <v-btn color="primary" @click="toggleBookingModal">Закрыть</v-btn>
-      </div>
+          </tbody>
+        </table>
+        <div class="vertical-space"></div>
+        <div class="align-center">
+          <v-btn color="red white--text" @click="toggleBookingModal">Закрыть</v-btn>
+        </div>
+      </template>
+      <template v-if="bookingMode === 'addBooking'">
+        <div class="vertical-space"></div>
+        <v-form ref="bookingForm">
+          <v-text-field label="Имя" v-model="booking.name" :rules="requiredRule" />
+          <v-text-field label="Фамилия" v-model="booking.surname" :rules="requiredRule" />
+          <v-text-field label="Кол-во мест" v-model="booking.seatsCount" :rules="countQuantityRule" type="number" />
+        </v-form>
+        <div class="align-center">
+          <v-btn color="red" class="white--text" @click="toggleBookingModal">Отмена</v-btn>
+          <v-btn color="success" @click="createBooking">Добавить</v-btn>
+        </div>
+      </template>
     </modal>
   </div>
 </template>
@@ -208,12 +225,17 @@ import {BookingService} from "@/services/booking.service";
 export default {
 	data() {
 		return {
-		  page: 1,
 			requiredRule: [(v) => !!v || 'Обязательное поле'],
+			countQuantityRule: [
+				v => !!v || 'Обязательное поле',
+				v => (v && v > 0 && v <= this.trip.availableSeatsCount) || `Min: 1, Max: ${this.trip.availableSeatsCount}`
+			],
+			page: 1,
 		  itineraries: [],
 			drivers: [],
 			transports: [],
 			mode: '',
+			bookingMode: 'list',
 			tripList: [],
 			totalTripCount: 0,
 			timeStart: '',
@@ -226,7 +248,8 @@ export default {
 				driverId: '',
 				vehicleId: '',
 				price: '',
-				startTime: ''
+				startTime: '',
+				availableSeatsCount: 0
 			},
 			filter: {
 			  date: '',
@@ -235,7 +258,12 @@ export default {
 				filterDatePicker: false
 			},
 			queryParam: '',
-			bookingList: []
+			bookingList: [],
+			booking: {
+				seatsCount: 0,
+				name: '',
+				surname: ''
+			}
 		};
 	},
 	async mounted() {
@@ -375,6 +403,8 @@ export default {
 		},
 		async getBookings(trip) {
 	    try {
+	      this.bookingMode = 'list';
+	      this.trip = trip;
 				await this.$store.dispatch('LoaderStore/setLoader', true);
 	      const resp = await BookingService.fetchBookings(trip.id);
 				this.bookingList = resp?.data?.bookings;
@@ -387,6 +417,34 @@ export default {
 		},
 		toggleBookingModal() {
 	    this.$modal.toggle('bookingModal');
+		},
+		openBookingMode() {
+	    this.bookingMode = 'addBooking';
+			this.booking.seatsCount = 0;
+			this.booking.surname = '';
+			this.booking.name = '';
+		},
+		async createBooking() {
+			if (this.$refs.bookingForm.validate()) {
+				try {
+					this.$store.dispatch('LoaderStore/setLoader', true);
+					const resp = await BookingService.create(this.trip.id, this.booking);
+					this.bookingList.unshift(resp.data.booking);
+					this.trip = resp.data.booking.trip;
+					this.tripList = this.tripList.map((trip) => {
+						if (trip.id === this.trip.id) {
+							trip.availableSeatsCount = this.trip.availableSeatsCount;
+						}
+						return trip;
+					});
+					this.$toast.success('Добавлен!');
+					this.bookingMode = 'list';
+					this.$store.dispatch('LoaderStore/setLoader', false);
+				} catch (err) {
+					this.$store.dispatch('LoaderStore/setLoader', false);
+					this.$toast.error(err);
+				}
+			}
 		}
 	}
 };
@@ -399,10 +457,18 @@ export default {
   }
   .show-bookings {
     cursor: pointer;
-    text-decoration: underline;
     color: #1A237E;
+    text-decoration: underline;
+    text-decoration-style: dashed;
+    font-weight: bold;
     &:hover {
       text-decoration: none;
+    }
+  }
+  .booking-modal {
+    .vm--modal {
+      overflow-y: auto;
+      max-height: 90vh;
     }
   }
 }
