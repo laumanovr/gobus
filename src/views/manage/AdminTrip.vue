@@ -46,10 +46,17 @@
       />
       <v-btn color="primary" @click="onFilterTrips">Фильтр</v-btn>
     </div>
+
     <div class="align-right">
       <v-btn color="primary" @click="toggleTripModal('create')">Добавить +</v-btn>
     </div>
+
     <template v-if="tripList.length">
+      <v-tabs background-color="transparent" class="d-flex justify-center">
+        <v-tab @click="onShowActiveOrPast('active')">Активные</v-tab>
+        <v-tab @click="onShowActiveOrPast('past')">Прошедшие</v-tab>
+      </v-tabs>
+      <div class="vertical-space"></div>
       <table class="table">
         <thead>
         <tr>
@@ -258,6 +265,7 @@ export default {
 				filterDatePicker: false
 			},
 			queryParam: '',
+			tripTab: 'active',
 			bookingList: [],
 			booking: {
 				seatsCount: 0,
@@ -272,6 +280,7 @@ export default {
 		};
 	},
 	async mounted() {
+	  this.queryParam = `&date[gte]=${this.todayDate}`;
 	  await this.getTripList();
 	  await this.getItineraries();
 	  await this.getDrivers();
@@ -301,7 +310,7 @@ export default {
 			this.getTripList();
 		},
 		onPaginate(page) {
-			const date = this.filter.date ? `&date=${this.filter.date}` : '';
+			const date = this.tripTab === 'active' ? `&date[gte]=${this.todayDate}` : `&date[lt]=${this.todayDate}`;
 			const driver = this.filter.driverId ? `&driverId=${this.filter.driverId}` : '';
 	    this.queryParam = `&page=${page}` + `${date}${driver}`;
 			this.getTripList();
@@ -450,6 +459,16 @@ export default {
 					this.$toast.error(err);
 				}
 			}
+		},
+		onShowActiveOrPast(tab) {
+	    this.tripTab = tab;
+			this.filter.date = '';
+			this.filter.formatDate = '';
+			this.filter.driverId = '';
+			this.page = 1;
+			const activeOrPast = tab === 'active' ? `&date[gte]=${this.todayDate}` : `&date[lt]=${this.todayDate}`;
+			this.queryParam = `&page=${this.page}` + activeOrPast;
+			this.getTripList();
 		}
 	}
 };
