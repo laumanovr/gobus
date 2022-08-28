@@ -295,7 +295,7 @@ export default {
 				this.tripList = resp?.data?.trips.map((trip) => {
 				  trip.dateAndTime = new Date(trip.startTime).toLocaleString('ru').slice(0, 17);
 					return trip;
-				}).reverse();
+				});
 				await this.$store.dispatch('LoaderStore/setLoader', false);
 			} catch (err) {
 	      this.$toast.error(err);
