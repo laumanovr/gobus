@@ -104,6 +104,7 @@ export default {
 	      this.driver.email = '';
 	      this.driver.mobileNumber = '';
 	      this.driver.driverLicense = '';
+				this.driver.password = '';
 			}
 	    if (mode && mode === 'update') {
 	      this.driver.id = driver.id;
@@ -112,7 +113,7 @@ export default {
 				this.driver.email = driver.email;
 				this.driver.mobileNumber = driver.mobileNumber;
 				this.driver.driverLicense = driver.driverLicense;
-				this.driver.password = 'gobus';
+				this.driver.password = '';
 			}
 			this.$modal.toggle('driverModal');
 		},
