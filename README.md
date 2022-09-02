@@ -1,4 +1,4 @@
-# bus-stop
+# go-bus
 
 ## Project setup
 ```
