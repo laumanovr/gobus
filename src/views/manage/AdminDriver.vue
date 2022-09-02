@@ -9,21 +9,25 @@
     <table class="table" v-if="driverList.length">
       <thead>
         <tr>
+          <th></th>
           <th>Имя</th>
           <th>Фамилия</th>
           <th>Номер</th>
           <th>E-Mail/Логин</th>
           <th>Права</th>
+          <th>Дата Регистрации</th>
           <th></th>
         </tr>
       </thead>
       <tbody>
-      <tr v-for="driver in driverList" :key="driver.id">
+      <tr v-for="(driver, i) in driverList" :key="driver.id">
+        <td>{{ i + 1 }}</td>
         <td>{{ driver.name }}</td>
         <td>{{ driver.surname }}</td>
         <td>{{ driver.mobileNumber }}</td>
         <td>{{ driver.email }}</td>
         <td>{{ driver.driverLicense }}</td>
+        <td>{{ new Date(driver.createdAt).toLocaleDateString('ru') }}</td>
         <td>
           <v-icon color="primary" class="action-icon" @click="toggleDriverModal('update', driver)">mdi-lead-pencil</v-icon>
           <v-icon color="red" class="action-icon" @click="deleteDriver(driver.id, true)">mdi-delete</v-icon>
@@ -148,7 +152,7 @@ export default {
 .driver-modal {
   .vm--modal {
     overflow-y: auto;
-    max-height: 72vh;
+    max-height: 80vh;
   }
 }
 </style>
