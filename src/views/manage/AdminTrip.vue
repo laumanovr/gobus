@@ -179,6 +179,9 @@
       <div class="align-center">
         <h3>{{ bookingMode === 'list' ? 'Список пассажиров' : 'Добавить пассажира' }}</h3>
       </div>
+      <div class="align-center" v-if="bookingMode === 'list'">
+        <h5>{{ showBookingTrip(trip) }}</h5>
+      </div>
       <template v-if="bookingMode === 'list'">
         <div class="align-right">
           <v-btn color="primary" small @click="openBookingMode">Добавить пассажира</v-btn>
@@ -188,7 +191,7 @@
           <tr>
             <th>№</th>
             <th>ФИО</th>
-            <!--<th>Телефон</th>-->
+            <th>Остановка</th>
             <th>Статус</th>
           </tr>
           </thead>
@@ -196,7 +199,7 @@
           <tr v-for="(booking, i) in bookingList" :key="i">
             <td>{{ i + 1 }}</td>
             <td>{{ booking.surname + ' ' + booking.name }}</td>
-            <!--<td>{{ booking.mobileNumber }}</td>-->
+            <td>{{ booking.station ? booking.station.name : '' }}</td>
             <td>{{ status[booking.status] }}</td>
           </tr>
           </tbody>
@@ -469,6 +472,15 @@ export default {
 			const activeOrPast = tab === 'active' ? `&date[gte]=${this.todayDate}` : `&date[lt]=${this.todayDate}`;
 			this.queryParam = `&page=${this.page}` + activeOrPast;
 			this.getTripList();
+		},
+
+		showBookingTrip(trip) {
+			if (trip.itinerary) {
+				const itineraries = trip?.itinerary?.items;
+				const lastIndex = itineraries.length - 1;
+				const tripName = itineraries[0]?.station?.name + ' - ' + itineraries[lastIndex]?.station?.name;
+				return `${tripName}, ${trip.dateAndTime}`;
+			}
 		}
 	}
 };
