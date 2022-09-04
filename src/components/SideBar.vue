@@ -61,11 +61,11 @@ export default {
 					route: '/manage/transport',
 					icon: 'mdi-train-car'
 				},
-				// {
-				// 	name: 'Аналитика',
-				// 	route: '/manage/analytics',
-				// 	icon: 'mdi-poll'
-				// },
+				{
+					name: 'Аналитика',
+					route: '/manage/analytics',
+					icon: 'mdi-poll'
+				},
 			]
 		};
 	},
