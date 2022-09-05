@@ -1,7 +1,7 @@
 <template>
   <div class="trip-container">
     <h2>Рейсы</h2>
-    <div class="d-flex align-center filter">
+    <div class="d-flex align-center filter-container">
       <v-menu
         v-model="filter.filterDatePicker"
         :close-on-content-click="false"
@@ -488,9 +488,6 @@ export default {
 
 <style lang="scss">
 .trip-container {
-  .filter {
-    max-width: 630px;
-  }
   .show-bookings {
     cursor: pointer;
     color: #1A237E;
