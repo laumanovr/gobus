@@ -6,6 +6,64 @@
       <v-btn color="primary" @click="toggleDriverModal('create')">Добавить +</v-btn>
     </div>
 
+    <div class="d-flex align-center">
+      <v-menu
+        v-model="filter.showDatePicker"
+        :close-on-content-click="false"
+        :nudge-right="40"
+        transition="scale-transition"
+        offset-y
+        min-width="290px"
+      >
+        <template v-slot:activator="{ on, attrs }">
+          <v-text-field
+            dense
+            outlined
+            background-color="#fff"
+            class="short"
+            label="Дата регистрации"
+            readonly
+            v-bind="attrs"
+            v-on="on"
+            v-model="filter.formatDate"
+            hide-details
+            clearable
+            @click:clear="onClear('date')"
+          />
+        </template>
+        <v-date-picker
+          locale="ru-RU"
+          v-model="filter.date"
+          @input="onFormatDate"
+        />
+      </v-menu>
+      <v-text-field
+        dense
+        outlined
+        background-color="#fff"
+        hide-details
+        class="short"
+        label="Фамилия"
+        v-model="filter.surname"
+        clearable
+        @click:clear="onClear('surname')"
+      />
+      <v-text-field
+        dense
+        outlined
+        background-color="#fff"
+        hide-details
+        class="short"
+        label="Имя"
+        v-model="filter.name"
+        clearable
+        @click:clear="onClear('name')"
+      />
+      <v-btn color="primary" @click="onSearch">Поиск</v-btn>
+    </div>
+
+    <div class="vertical-space"></div>
+
     <table class="table" v-if="driverList.length">
       <thead>
         <tr>
@@ -82,7 +140,15 @@ export default {
 				surname: '',
 				mobileNumber: '',
 				driverLicense: ''
-			}
+			},
+			filter: {
+				date: '',
+				formatDate: '',
+				surname: '',
+				name: '',
+				showDatePicker: false
+			},
+			queryParam: ''
 		};
 	},
 	mounted() {
@@ -92,7 +158,7 @@ export default {
 	  async getDriverList() {
 			try {
 				await this.$store.dispatch('LoaderStore/setLoader', true);
-				const res = await DriverService.fetchDriverList();
+				const res = await DriverService.fetchDriverList(this.queryParam);
 				this.driverList = res?.data?.drivers;
 				await this.$store.dispatch('LoaderStore/setLoader', false);
 			} catch (err) {
@@ -138,6 +204,46 @@ export default {
 		},
 		deleteDriver(driverId, isConfirm) {
 			this.deleteItem(DriverService, driverId, isConfirm);
+		},
+		onFormatDate() {
+			this.filter.formatDate = new Date(this.filter.date).toLocaleDateString('ru-RU');
+			this.filter.showDatePicker = false;
+			this.filter.surname = '';
+			this.filter.name = '';
+			this.page = 1;
+			this.queryParam = `&date=${this.filter.date}`;
+			this.getDriverList();
+		},
+		onClear(type) {
+			if (type === 'date') {
+				this.filter.date = '';
+				this.filter.formatDate = '';
+				const surname = this.filter.surname ? `&surname=${this.filter.surname}` : '';
+				const name = this.filter.name ? `&name=${this.filter.name}` : '';
+				this.queryParam = surname + name;
+			}
+			if (type === 'surname') {
+				const name = this.filter.name ? `&name=${this.filter.name}` : '';
+				const date = this.filter.date ? `&date=${this.filter.date}` : '';
+				this.queryParam = name + date;
+			}
+			if (type === 'name') {
+				const surname = this.filter.surname ? `&surname=${this.filter.surname}` : '';
+				const date = this.filter.date ? `&date=${this.filter.date}` : '';
+				this.queryParam = surname + date;
+			}
+			this.page = 1;
+			this.getDriverList();
+		},
+		onSearch() {
+			if (this.filter.surname || this.filter.name) {
+				const date = this.filter.date ? `&date=${this.filter.date}` : '';
+				const surname = this.filter.surname ? `&surname=${this.filter.surname}` : '';
+				const name = this.filter.name ? `&name=${this.filter.name}` : '';
+				this.queryParam = date + surname + name;
+				this.page = 1;
+				this.getDriverList();
+			}
 		}
 	},
 	watch: {

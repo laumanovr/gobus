@@ -5,8 +5,8 @@ export class DriverService {
 	constructor() {
 	}
 
-	static fetchDriverList() {
-		const url = 'drivers';
+	static fetchDriverList(queryParam='') {
+		const url = `drivers?page=1${queryParam}`;
 		return sendGetRequest(url);
 	}
 
