@@ -2,10 +2,6 @@
   <div class="driver-container">
     <h2>Водители</h2>
 
-    <div class="align-right">
-      <v-btn color="primary" @click="toggleDriverModal('create')">Добавить +</v-btn>
-    </div>
-
     <div class="d-flex align-center">
       <v-menu
         v-model="filter.showDatePicker"
@@ -63,6 +59,10 @@
     </div>
 
     <div class="vertical-space"></div>
+
+    <div class="align-right">
+      <v-btn color="primary" @click="toggleDriverModal('create')">Добавить +</v-btn>
+    </div>
 
     <table class="table" v-if="driverList.length">
       <thead>
