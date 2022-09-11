@@ -424,7 +424,7 @@ export default {
 	      this.bookingMode = 'list';
 	      this.trip = trip;
 				await this.$store.dispatch('LoaderStore/setLoader', true);
-	      const resp = await BookingService.fetchBookings(trip.id);
+	      const resp = await BookingService.fetchAllTripBookings(trip.id);
 				this.bookingList = resp?.data?.bookings;
 				await this.$store.dispatch('LoaderStore/setLoader', false);
 				this.toggleBookingModal();
