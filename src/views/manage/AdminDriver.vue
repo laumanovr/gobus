@@ -74,6 +74,7 @@
           <th>E-Mail/Логин</th>
           <th>Права</th>
           <th>Дата Регистрации</th>
+          <th>Отзывы</th>
           <th></th>
         </tr>
       </thead>
@@ -86,6 +87,7 @@
         <td>{{ driver.email }}</td>
         <td>{{ driver.driverLicense }}</td>
         <td>{{ new Date(driver.createdAt).toLocaleDateString('ru') }}</td>
+        <td><span class="link-dashed" @click="openReviewModal(driver)">Показать</span></td>
         <td>
           <v-icon color="primary" class="action-icon" @click="toggleDriverModal('update', driver)">mdi-lead-pencil</v-icon>
           <v-icon color="red" class="action-icon" @click="deleteDriver(driver.id, true)">mdi-delete</v-icon>
@@ -109,6 +111,30 @@
       <div class="align-center">
         <v-btn color="red" class="white--text" @click="toggleDriverModal">Отмена</v-btn>
         <v-btn color="success" @click="submitDriver">Подтвердить</v-btn>
+      </div>
+    </modal>
+
+  <!--Review Modal-->
+    <modal name="review-modal" height="auto" width="750px" class="review-modal">
+      <div class="align-center">
+        <h3>Отзывы - {{ driver.surname +' '+ driver.name }}</h3>
+      </div>
+      <div class="review" v-for="review in reviews" :key="review.id">
+        <div class="review__name font-weight-bold d-flex align-center justify-start">
+          {{ review.user.surname +' '+ review.user.name }}
+          <div class="review__rating d-flex align-center">
+            <img src="@/assets/images/unfilled-star.svg" alt="image" v-for="i in 5" :key="i">
+            <div class="d-flex align-center filled">
+              <img src="@/assets/images/rating-icon.svg" alt="image" v-for="score in review.score" :key="score+'i'">
+            </div>
+          </div>
+        </div>
+        <div class="review__text">{{ review.text }}</div>
+        <div class="vertical-space"></div>
+      </div>
+      <div class="vertical-space"></div>
+      <div class="align-center">
+        <v-btn color="primary" @click="closeReviewModal">Закрыть</v-btn>
       </div>
     </modal>
   </div>
@@ -148,7 +174,8 @@ export default {
 				name: '',
 				showDatePicker: false
 			},
-			queryParam: ''
+			queryParam: '',
+			reviews: []
 		};
 	},
 	mounted() {
@@ -244,7 +271,25 @@ export default {
 				this.page = 1;
 				this.getDriverList();
 			}
-		}
+		},
+		async openReviewModal(driver) {
+	    this.$store.dispatch('LoaderStore/setLoader', true);
+			this.driver.id = driver.id;
+			this.driver.name = driver.name;
+			this.driver.surname = driver.surname;
+			try {
+				const resp = await DriverService.fetchDriverReviews(this.driver.id);
+				this.reviews = resp.data.reviews;
+				this.$modal.show('review-modal');
+				this.$store.dispatch('LoaderStore/setLoader', false);
+			} catch (err) {
+				this.$toast.error(err);
+				this.$store.dispatch('LoaderStore/setLoader', false);
+			}
+		},
+    closeReviewModal() {
+      this.$modal.hide('review-modal');
+    }
 	},
 	watch: {
 		onDelete() {
@@ -259,6 +304,29 @@ export default {
   .vm--modal {
     overflow-y: auto;
     max-height: 80vh;
+  }
+}
+.review-modal {
+  .review {
+    font-size: 15px;
+    &__rating {
+      position: relative;
+      margin-left: 4px;
+      .filled {
+        position: absolute;
+        top: 0;
+        left: 0;
+      }
+      img {
+        margin-left: 3px;
+        width: 16px;
+        height: 16px;
+      }
+    }
+  }
+  .vm--modal {
+    overflow-y: auto;
+    max-height: 90vh;
   }
 }
 </style>
