@@ -287,9 +287,9 @@ export default {
 				this.$store.dispatch('LoaderStore/setLoader', false);
 			}
 		},
-    closeReviewModal() {
-      this.$modal.hide('review-modal');
-    }
+		closeReviewModal() {
+			this.$modal.hide('review-modal');
+		}
 	},
 	watch: {
 		onDelete() {
