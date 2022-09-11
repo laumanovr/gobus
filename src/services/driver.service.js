@@ -10,6 +10,11 @@ export class DriverService {
 		return sendGetRequest(url);
 	}
 
+	static fetchDriverReviews(driverId) {
+	  const url = `drivers/${driverId}/reviews`;
+		return sendGetRequest(url);
+	}
+
 	static create(body) {
 		const url = 'drivers';
 		return sendPostRequest(url, body);
