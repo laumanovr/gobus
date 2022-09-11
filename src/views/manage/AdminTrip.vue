@@ -51,11 +51,12 @@
       <v-btn color="primary" @click="toggleTripModal('create')">Добавить +</v-btn>
     </div>
 
+    <v-tabs background-color="transparent" class="d-flex justify-center" v-model="tripTab">
+      <v-tab @click="onShowActiveOrPast('active')">Активные</v-tab>
+      <v-tab @click="onShowActiveOrPast('past')">Прошедшие</v-tab>
+    </v-tabs>
+
     <template v-if="tripList.length">
-      <v-tabs background-color="transparent" class="d-flex justify-center">
-        <v-tab @click="onShowActiveOrPast('active')">Активные</v-tab>
-        <v-tab @click="onShowActiveOrPast('past')">Прошедшие</v-tab>
-      </v-tabs>
       <div class="vertical-space"></div>
       <table class="table">
         <thead>
@@ -81,7 +82,7 @@
           <td>{{ trip.vehicle.name }}</td>
           <td>{{ trip.price }}</td>
           <td>
-          <span @click="getBookings(trip)" class="show-bookings">
+          <span @click="getBookings(trip)" class="link-dashed">
             {{ trip.vehicle.capacity - trip.availableSeatsCount }}/{{ trip.vehicle.capacity }}
           </span>
           </td>
@@ -409,7 +410,7 @@ export default {
 					this.trip.startTime = new Date(`${this.pickerDate}T${this.timeStart}`);
 	        await this.$store.dispatch('LoaderStore/setLoader', true);
 					await TripService[this.mode](this.trip);
-					await this.getTripList();
+					await this.onShowActiveOrPast('active');
 	        this.$toast.success(this.mode === 'create' ? 'Рейс создан!' : 'Рейс обновлен!');
 					this.toggleTripModal();
 				} catch (err) {
@@ -488,16 +489,6 @@ export default {
 
 <style lang="scss">
 .trip-container {
-  .show-bookings {
-    cursor: pointer;
-    color: #1A237E;
-    text-decoration: underline;
-    text-decoration-style: dashed;
-    font-weight: bold;
-    &:hover {
-      text-decoration: none;
-    }
-  }
   .booking-modal {
     .vm--modal {
       overflow-y: auto;
