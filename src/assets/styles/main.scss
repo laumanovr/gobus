@@ -54,6 +54,17 @@ hr {
   max-width: 630px;
 }
 
+.link-dashed {
+  cursor: pointer;
+  color: #1A237E;
+  text-decoration: underline;
+  text-decoration-style: dashed;
+  font-weight: bold;
+  &:hover {
+    text-decoration: none;
+  }
+}
+
 .table {
   background: #fff;
   border: 1px solid gray;
