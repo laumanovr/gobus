@@ -87,7 +87,7 @@
           </span>
           </td>
           <td>
-            <v-icon color="primary" class="action-icon" @click="toggleTripModal('update', trip)" title="Редактировать">
+            <v-icon v-show="!tripTab" color="primary" class="action-icon" @click="toggleTripModal('update', trip)" title="Редактировать">
               mdi-lead-pencil
             </v-icon>
             <v-icon color="success" class="action-icon" title="Дублировать" @click="toggleTripModal('copy', trip)">
