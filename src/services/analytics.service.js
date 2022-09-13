@@ -4,8 +4,8 @@ export class AnalyticsService {
 	constructor() {
 	}
 
-	static fetchStationCount() {
-		const url = 'stations/stats';
+	static fetchStationBookCount(queryParam='') {
+		const url = `stations/stats${queryParam}`;
 		return sendGetRequest(url);
 	}
 }
