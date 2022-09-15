@@ -41,12 +41,14 @@
       <tr>
         <th>Остановка</th>
         <th>Количество посадок</th>
+        <th>Количество высадок</th>
       </tr>
       </thead>
       <tbody>
       <tr v-for="(item, i) in analyticsData" :key="i">
         <td>{{ item.station ? item.station.name : '' }}</td>
-        <td>{{ item.count }}</td>
+        <td>{{ item.boarding }}</td>
+        <td>{{ item.exiting }}</td>
       </tr>
       </tbody>
     </table>
