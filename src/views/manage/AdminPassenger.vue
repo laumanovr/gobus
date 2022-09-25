@@ -54,6 +54,17 @@
         clearable
         @click:clear="onClear('name')"
       />
+      <v-text-field
+        dense
+        outlined
+        background-color="#fff"
+        hide-details
+        class="short"
+        label="Email"
+        v-model="filter.email"
+        clearable
+        @click:clear="onClear('email')"
+      />
       <v-btn color="primary" @click="onSearch">Поиск</v-btn>
     </div>
 
@@ -104,6 +115,7 @@ export default {
 				formatDate: '',
 				surname: '',
 				name: '',
+				email: '',
 				showDatePicker: false
 			},
 			queryParam: ''
@@ -140,27 +152,37 @@ export default {
 				this.filter.formatDate = '';
 				const surname = this.filter.surname ? `&surname=${this.filter.surname}` : '';
 				const name = this.filter.name ? `&name=${this.filter.name}` : '';
-				this.queryParam = surname + name;
+				const email = this.filter.email ? `&email=${this.filter.email}` : '';
+				this.queryParam = surname + name + email;
 			}
 			if (type === 'surname') {
 				const name = this.filter.name ? `&name=${this.filter.name}` : '';
 				const date = this.filter.date ? `&date=${this.filter.date}` : '';
-				this.queryParam = name + date;
+				const email = this.filter.email ? `&email=${this.filter.email}` : '';
+				this.queryParam = name + date + email;
 			}
 			if (type === 'name') {
 				const surname = this.filter.surname ? `&surname=${this.filter.surname}` : '';
 				const date = this.filter.date ? `&date=${this.filter.date}` : '';
-				this.queryParam = surname + date;
+				const email = this.filter.email ? `&email=${this.filter.email}` : '';
+				this.queryParam = surname + date + email;
+			}
+			if (type === 'email') {
+				const surname = this.filter.surname ? `&surname=${this.filter.surname}` : '';
+				const name = this.filter.name ? `&name=${this.filter.name}` : '';
+				const date = this.filter.date ? `&date=${this.filter.date}` : '';
+				this.queryParam = surname + name + date;
 			}
 			this.page = 1;
 			this.getPassengerList();
 		},
 		onSearch() {
-			if (this.filter.surname || this.filter.name) {
+			if (this.filter.surname || this.filter.name || this.filter.email) {
 				const date = this.filter.date ? `&date=${this.filter.date}` : '';
 				const surname = this.filter.surname ? `&surname=${this.filter.surname}` : '';
 				const name = this.filter.name ? `&name=${this.filter.name}` : '';
-				this.queryParam = date + surname + name;
+				const email = this.filter.email ? `&email=${this.filter.email}` : '';
+				this.queryParam = date + surname + name + email;
 				this.page = 1;
 				this.getPassengerList();
 			}
