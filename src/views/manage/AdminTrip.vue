@@ -218,6 +218,8 @@
           <v-text-field label="Имя" v-model="booking.name" :rules="requiredRule" />
           <v-text-field label="Фамилия" v-model="booking.surname" :rules="requiredRule" />
           <v-text-field label="Кол-во мест" v-model="booking.seatsCount" :rules="countQuantityRule" type="number" />
+          <v-select label="Остановка посадки" :items="stations" item-text="name" item-value="id" v-model="booking.stationFromId" />
+          <v-select label="Остановка высадки" :items="stations" item-text="name" item-value="id" v-model="booking.stationToId" />
         </v-form>
         <div class="align-center">
           <v-btn color="red" class="white--text" @click="toggleBookingModal">Отмена</v-btn>
@@ -234,6 +236,7 @@ import {ItineraryService} from "@/services/itinerary.service";
 import {DriverService} from "@/services/driver.service";
 import {TransportService} from "@/services/transport.service";
 import {BookingService} from "@/services/booking.service";
+import {StationService} from "@/services/station.service";
 
 export default {
 	data() {
@@ -247,6 +250,7 @@ export default {
 		  itineraries: [],
 			drivers: [],
 			transports: [],
+			stations: [],
 			mode: '',
 			bookingMode: 'list',
 			tripList: [],
@@ -276,7 +280,9 @@ export default {
 			booking: {
 				seatsCount: 0,
 				name: '',
-				surname: ''
+				surname: '',
+				stationFromId: 0,
+				stationToId: 0
 			},
 			status: {
 			  'PENDING': 'Оплата',
@@ -291,8 +297,17 @@ export default {
 	  await this.getItineraries();
 	  await this.getDrivers();
 	  await this.getTransports();
+	  await this.getStationList();
 	},
 	methods: {
+	  async getStationList() {
+	    try {
+	      const resp = await StationService.fetchStationList();
+	      this.stations = resp.data.stations;
+			} catch (err) {
+	      this.$toast.error(err);
+			}
+		},
 	  async getTripList() {
 	    try {
 	      await this.$store.dispatch('LoaderStore/setLoader', true);
@@ -427,7 +442,7 @@ export default {
 	      this.trip = trip;
 				await this.$store.dispatch('LoaderStore/setLoader', true);
 	      const resp = await BookingService.fetchAllTripBookings(trip.id);
-				this.bookingList = resp?.data?.bookings;
+				this.bookingList = resp?.data?.bookings?.reverse();
 				await this.$store.dispatch('LoaderStore/setLoader', false);
 				this.toggleBookingModal();
 			} catch (err) {
@@ -449,7 +464,6 @@ export default {
 				try {
 					this.$store.dispatch('LoaderStore/setLoader', true);
 					const resp = await BookingService.create(this.trip.id, this.booking);
-					this.bookingList.unshift(resp.data.booking);
 					this.trip = resp.data.booking.trip;
 					this.tripList = this.tripList.map((trip) => {
 						if (trip.id === this.trip.id) {
@@ -457,6 +471,8 @@ export default {
 						}
 						return trip;
 					});
+					const bookResp = await BookingService.fetchAllTripBookings(this.trip.id);
+					this.bookingList = bookResp?.data?.bookings?.reverse();
 					this.$toast.success('Добавлен!');
 					this.bookingMode = 'list';
 					this.$store.dispatch('LoaderStore/setLoader', false);
