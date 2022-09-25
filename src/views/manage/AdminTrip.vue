@@ -192,7 +192,8 @@
           <tr>
             <th>№</th>
             <th>ФИО</th>
-            <th>Остановка</th>
+            <th>Посадка</th>
+            <th>Высадка</th>
             <th>Статус</th>
           </tr>
           </thead>
@@ -200,7 +201,8 @@
           <tr v-for="(booking, i) in bookingList" :key="i">
             <td>{{ i + 1 }}</td>
             <td>{{ booking.surname + ' ' + booking.name }}</td>
-            <td>{{ booking.station ? booking.station.name : '' }}</td>
+            <td>{{ booking.stationFrom ? booking.stationFrom.name : '' }}</td>
+            <td>{{ booking.stationTo ? booking.stationTo.name : '' }}</td>
             <td>{{ status[booking.status] }}</td>
           </tr>
           </tbody>
