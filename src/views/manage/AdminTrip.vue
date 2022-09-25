@@ -278,7 +278,7 @@ export default {
 			tripTab: 'active',
 			bookingList: [],
 			booking: {
-				seatsCount: 0,
+				seatsCount: '',
 				name: '',
 				surname: '',
 				stationFromId: 0,
@@ -455,7 +455,7 @@ export default {
 		},
 		openBookingMode() {
 	    this.bookingMode = 'addBooking';
-			this.booking.seatsCount = 0;
+			this.booking.seatsCount = '';
 			this.booking.surname = '';
 			this.booking.name = '';
 		},
