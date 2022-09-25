@@ -4,7 +4,7 @@
 
     <div class="d-flex align-center">
       <v-menu
-        v-model="filter.filterDatePicker"
+        v-model="filter.datePickerFrom"
         :close-on-content-click="false"
         :nudge-right="40"
         transition="scale-transition"
@@ -17,11 +17,11 @@
             outlined
             background-color="#fff"
             class="short"
-            label="Фильтр по дате"
+            label="Дата от"
             readonly
             v-bind="attrs"
             v-on="on"
-            v-model="filter.formatDate"
+            v-model="filter.formatDateFrom"
             hide-details
             clearable
             @click:clear="onClear"
@@ -29,29 +29,51 @@
         </template>
         <v-date-picker
           locale="ru-RU"
-          v-model="filter.date"
-          @input="onFilterDate"
+          v-model="filter.dateFrom"
+          @input="onFilterDate('from')"
         />
       </v-menu>
+      <v-menu
+        v-model="filter.datePickerTo"
+        :close-on-content-click="false"
+        :nudge-right="40"
+        transition="scale-transition"
+        offset-y
+        min-width="290px"
+      >
+        <template v-slot:activator="{ on, attrs }">
+          <v-text-field
+            dense
+            outlined
+            background-color="#fff"
+            class="short"
+            label="Дата до"
+            readonly
+            v-bind="attrs"
+            v-on="on"
+            v-model="filter.formatDateTo"
+            hide-details
+            clearable
+            @click:clear="onClear"
+          />
+        </template>
+        <v-date-picker
+          locale="ru-RU"
+          v-model="filter.dateTo"
+          @input="onFilterDate('to')"
+        />
+      </v-menu>
+      <v-btn color="primary" @click="onFilter">Фильтр</v-btn>
     </div>
     <div class="vertical-space"></div>
-
-    <table class="table">
-      <thead>
-      <tr>
-        <th>Остановка</th>
-        <th>Количество посадок</th>
-        <th>Количество высадок</th>
-      </tr>
-      </thead>
-      <tbody>
-      <tr v-for="(item, i) in analyticsData" :key="i">
-        <td>{{ item.station ? item.station.name : '' }}</td>
-        <td>{{ item.boarding }}</td>
-        <td>{{ item.exiting }}</td>
-      </tr>
-      </tbody>
-    </table>
+    <v-data-table
+      :headers="headers"
+      :items="analyticsData"
+      no-data-text="Пусто"
+      class="elevation-1"
+      hide-default-footer
+      disable-pagination
+    />
   </div>
 </template>
 
@@ -61,12 +83,20 @@ import {AnalyticsService} from "@/services/analytics.service";
 export default {
 	data() {
 		return {
+		  headers: [
+				{text: 'Остановка', value: 'station.name', align: 'center'},
+				{text: 'Количество посадок', value: 'boarding', align: 'center'},
+				{text: 'Количество высадок', value: 'exiting', align: 'center'}
+			],
 			analyticsData: [],
 			queryParam: '',
 			filter: {
-				date: '',
-				formatDate: '',
-				filterDatePicker: false
+				dateFrom: '',
+				formatDateFrom: '',
+				datePickerFrom: false,
+				dateTo: '',
+				formatDateTo: '',
+				datePickerTo: false
 			},
 		};
 	},
@@ -85,15 +115,27 @@ export default {
 				this.$toast.error(err);
 			}
 		},
-		onFilterDate() {
-			this.filter.formatDate = new Date(this.filter.date).toLocaleDateString('ru-RU');
-			this.filter.filterDatePicker = false;
-			this.queryParam = `?date=${this.filter.date}`;
-			this.getAnalytics();
+		onFilterDate(type) {
+		  if (type === 'from') {
+				this.filter.formatDateFrom = new Date(this.filter.dateFrom).toLocaleDateString('ru-RU');
+				this.filter.datePickerFrom = false;
+			}
+		  if (type === 'to') {
+				this.filter.formatDateTo = new Date(this.filter.dateTo).toLocaleDateString('ru-RU');
+				this.filter.datePickerTo = false;
+			}
+			this.queryParam = `?date[gte]=${this.filter.dateFrom}&date[lt]=${this.filter.dateTo}`;
 		},
 		onClear() {
+		  this.filter.formatDateFrom = '';
+		  this.filter.formatDateTo = '';
 			this.queryParam = '';
 			this.getAnalytics();
+		},
+		onFilter() {
+		  if (this.filter.dateFrom && this.filter.dateTo) {
+		    this.getAnalytics();
+			}
 		}
 	}
 };
