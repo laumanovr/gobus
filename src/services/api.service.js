@@ -2,6 +2,7 @@ import axios from "axios";
 import {authHeader} from "@/utils/authHeader";
 
 const BASE_URL = 'http://18.216.111.140:3000/api/v1';
+// const BASE_URL = 'https://api.gobus.kg/api/v1';
 
 export const sendGetRequest = (url) => sendRequest('GET', url);
 
