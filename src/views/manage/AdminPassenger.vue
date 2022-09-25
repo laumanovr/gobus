@@ -98,6 +98,7 @@
         @input="getPassengerList"
       />
     </template>
+    <h3 class="d-flex justify-center" v-else>Пусто</h3>
   </div>
 </template>
 

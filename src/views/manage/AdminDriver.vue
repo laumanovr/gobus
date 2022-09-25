@@ -95,6 +95,7 @@
       </tr>
       </tbody>
     </table>
+    <h3 class="d-flex justify-center" v-else>Пусто</h3>
 
     <modal name="driverModal" height="auto" class="driver-modal">
       <div class="align-center">
