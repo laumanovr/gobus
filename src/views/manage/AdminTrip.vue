@@ -200,7 +200,7 @@
           <tbody>
           <tr v-for="(booking, i) in bookingList" :key="i">
             <td>{{ i + 1 }}</td>
-            <td>{{ booking.surname + ' ' + booking.name }}</td>
+            <td>{{ booking.user ? (booking.user.name+' '+booking.user.surname) : 'NO NAME' }}</td>
             <td>{{ booking.stationFrom ? booking.stationFrom.name : '' }}</td>
             <td>{{ booking.stationTo ? booking.stationTo.name : '' }}</td>
             <td>{{ status[booking.status] }}</td>
