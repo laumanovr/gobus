@@ -75,6 +75,8 @@
         <tr>
           <th>№</th>
           <th>ФИО</th>
+          <th>Дата рождения</th>
+          <th>Пол</th>
           <th>Дата Регистрации</th>
           <th>Номер</th>
           <th>Почта</th>
@@ -84,6 +86,8 @@
         <tr v-for="(passenger, i) in passengerList" :key="i">
           <td>{{ ((page - 1) * 10) + (i + 1) }}</td>
           <td>{{ passenger.surname + ' ' + passenger.name }}</td>
+          <td>{{ new Date(passenger.birthday).toLocaleDateString('ru') }}</td>
+          <td>{{ gender[passenger.gender] }}</td>
           <td>{{ new Date(passenger.createdAt).toLocaleDateString('ru') }}</td>
           <td>{{ passenger.mobileNumber }}</td>
           <td>{{ passenger.email }}</td>
@@ -108,6 +112,10 @@ import {PassengerService} from "@/services/passenger.service";
 export default {
 	data() {
 		return {
+		  gender: {
+		    MALE: 'М',
+        FEMALE: 'Ж'
+      },
 			passengerList: [],
 			totalUsersCount: 0,
 			page: 1,
