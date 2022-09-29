@@ -93,7 +93,7 @@
             <v-icon color="success" class="action-icon" title="Дублировать" @click="toggleTripModal('copy', trip)">
               mdi-refresh
             </v-icon>
-            <!--<v-icon color="red" class="action-icon">mdi-delete</v-icon>-->
+            <v-icon color="red" class="action-icon" title="Удалить" @click="removeTrip(trip.id, true)">mdi-delete</v-icon>
           </td>
         </tr>
         </tbody>
@@ -237,8 +237,10 @@ import {DriverService} from "@/services/driver.service";
 import {TransportService} from "@/services/transport.service";
 import {BookingService} from "@/services/booking.service";
 import {StationService} from "@/services/station.service";
+import DeleteMixin from "@/mixin/DeleteMixin";
 
 export default {
+	mixins: [DeleteMixin],
 	data() {
 		return {
 			requiredRule: [(v) => !!v || 'Обязательное поле'],
@@ -500,6 +502,15 @@ export default {
 				const tripName = itineraries[0]?.station?.name + ' - ' + itineraries[lastIndex]?.station?.name;
 				return `${tripName}, ${trip.dateAndTime}`;
 			}
+		},
+
+		removeTrip(tripId, isConfirm) {
+			this.deleteItem(TripService, tripId, isConfirm);
+		}
+	},
+	watch: {
+		onDelete() {
+			this.getTripList();
 		}
 	}
 };

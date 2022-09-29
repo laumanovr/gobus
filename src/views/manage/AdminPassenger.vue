@@ -114,8 +114,8 @@ export default {
 		return {
 		  gender: {
 		    MALE: 'М',
-        FEMALE: 'Ж'
-      },
+				FEMALE: 'Ж'
+			},
 			passengerList: [],
 			totalUsersCount: 0,
 			page: 1,
