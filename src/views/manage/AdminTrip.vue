@@ -1,7 +1,7 @@
 <template>
   <div class="trip-container">
     <h2>Рейсы</h2>
-    <div class="d-flex align-center filter-container">
+    <div class="d-flex align-center">
       <v-menu
         v-model="filter.filterDatePicker"
         :close-on-content-click="false"
@@ -44,8 +44,23 @@
         clearable
         @click:clear="onClear"
       />
+      <v-select
+        dense
+        solo
+        hide-details
+        class="short"
+        label="Статус"
+        :items="tripStatuses"
+        item-text="name"
+        item-value="val"
+        v-model="filter.status"
+        clearable
+        @click:clear="onClear"
+      />
       <v-btn color="primary" @click="onFilterTrips">Фильтр</v-btn>
     </div>
+
+    <div class="vertical-space"></div>
 
     <div class="align-right">
       <v-btn color="primary" @click="toggleTripModal('create')">Добавить +</v-btn>
@@ -276,6 +291,7 @@ export default {
 			  date: '',
 				formatDate: '',
 				driverId: '',
+				status: '',
 				filterDatePicker: false
 			},
 			queryParam: '',
@@ -293,11 +309,16 @@ export default {
 				'CASH': 'Наличка',
 				'SCANNED': 'Отсканировано'
 			},
-      tripStatus: {
+			tripStatus: {
 			  'PENDING': 'В ожидании',
-        'STARTED': 'Уехал',
-        'COMPLETED': 'Завершен'
-      }
+				'STARTED': 'Уехал',
+				'COMPLETED': 'Завершен'
+			},
+			tripStatuses: [
+				{name: 'В ожидании', val: 'PENDING'},
+				{name: 'Уехал', val: 'STARTED'},
+				{name: 'Завершен', val: 'COMPLETED'}
+			]
 		};
 	},
 	async mounted() {
@@ -335,14 +356,21 @@ export default {
 		onFilterTrips() {
 			const date = this.filter.date ? `&date=${this.filter.date}` : '';
 			const driver = this.filter.driverId ? `&driverId=${this.filter.driverId}` : '';
-			this.queryParam = `${date}${driver}`;
+			const status = this.filter.status ? `&status=${this.filter.status}` : '';
+			this.queryParam = `${date}${driver}${status}`;
 			this.page = 1;
-			this.getTripList();
+			if (this.queryParam) {
+				this.getTripList();
+			} else {
+			  this.tripTab = 'active';
+			  this.onPaginate(1);
+			}
 		},
 		onPaginate(page) {
 			const date = this.tripTab === 'active' ? `&date[gte]=${this.todayDate}` : `&date[lt]=${this.todayDate}`;
 			const driver = this.filter.driverId ? `&driverId=${this.filter.driverId}` : '';
-	    this.queryParam = `&page=${page}` + `${date}${driver}`;
+			const status = this.filter.status ? `&status=${this.filter.status}` : '';
+	    this.queryParam = `&page=${page}` + `${date}${driver}${status}`;
 			this.getTripList();
 		},
 		onClear(val) {
