@@ -9,6 +9,7 @@
       <tr>
         <th>Название</th>
         <th>Кол-во мест</th>
+        <th>Номер машины</th>
         <th></th>
       </tr>
       </thead>
@@ -16,6 +17,7 @@
       <tr v-for="transport in transportList" :key="transport.id">
         <td>{{ transport.name }}</td>
         <td>{{ transport.capacity }}</td>
+        <td>{{ transport.plateNumber }}</td>
         <td>
           <v-icon color="primary" class="action-icon" @click="toggleTransportModal('update', transport)">mdi-lead-pencil</v-icon>
         </td>
@@ -30,6 +32,7 @@
       <v-form ref="transportForm">
         <v-text-field label="Название" v-model="transport.name" :rules="requiredRule" />
         <v-text-field label="Количество мест" v-model="transport.capacity" :rules="requiredRule" type="number" />
+        <v-text-field label="Номер машины" v-model="transport.plateNumber" />
       </v-form>
       <div class="align-center">
         <v-btn color="red" class="white--text" @click="toggleTransportModal">Отмена</v-btn>
@@ -52,7 +55,8 @@ export default {
 			transportList: [],
 			transport: {
 				name: '',
-				capacity: 0
+				capacity: 0,
+				plateNumber: ''
 			}
 		};
 	},
@@ -76,11 +80,13 @@ export default {
 			if (mode && mode === 'create') {
 				this.transport.name = '';
 				this.transport.capacity = 0;
+				this.transport.plateNumber = '';
 			}
 			if (mode && mode === 'update') {
 				this.transport.id = transport.id;
 				this.transport.name = transport.name;
 				this.transport.capacity = transport.capacity;
+				this.transport.plateNumber = transport.plateNumber;
 			}
 			this.$modal.toggle('transportModal');
 		},
