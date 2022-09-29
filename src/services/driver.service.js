@@ -17,12 +17,18 @@ export class DriverService {
 
 	static create(body) {
 		const url = 'drivers';
-		return sendPostRequest(url, body);
+		const formData = new FormData();
+		Object.entries(body).forEach((item) => formData.append(item[0], item[1]));
+		return sendPostRequest(url, formData);
 	}
 
 	static update(body) {
 		const url = `drivers/${body.id}`;
-		return sendPatchRequest(url, body);
+		delete body.image;
+		if (!body.photo?.size) delete body.photo;
+		const formData = new FormData();
+		Object.entries(body).forEach((item) => formData.append(item[0], item[1]));
+		return sendPatchRequest(url, formData);
 	}
 
 	static delete(id) {
