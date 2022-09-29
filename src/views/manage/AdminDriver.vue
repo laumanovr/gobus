@@ -75,6 +75,7 @@
           <th>Права</th>
           <th>Дата Регистрации</th>
           <th>Отзывы</th>
+          <th>Фото</th>
           <th></th>
         </tr>
       </thead>
@@ -88,6 +89,7 @@
         <td>{{ driver.driverLicense }}</td>
         <td>{{ new Date(driver.createdAt).toLocaleDateString('ru') }}</td>
         <td><span class="link-dashed" @click="openReviewModal(driver)">Показать</span></td>
+        <td><img class="driver-photo" :src="'https://api.gobus.kg/public/images/'+driver.photo" v-if="driver.photo"></td>
         <td>
           <v-icon color="primary" class="action-icon" @click="toggleDriverModal('update', driver)">mdi-lead-pencil</v-icon>
           <v-icon color="red" class="action-icon" @click="deleteDriver(driver.id, true)">mdi-delete</v-icon>
@@ -108,6 +110,11 @@
         <v-text-field label="E-Mail" v-model="driver.email" :rules="emailRule"/>
         <v-text-field label="Права" v-model="driver.driverLicense" :rules="requiredRule"/>
         <v-text-field label="Пароль" v-model="driver.password" :rules="requiredRule"/>
+        <v-file-input accept="image/*" label="Фото" v-model="driver.photo" v-if="!driver.image"/>
+        <div class="d-flex" v-if="driver.image">
+          <img class="driver-photo" :src="driver.image">
+          <v-icon @click="driver.image=''">mdi-close</v-icon>
+        </div>
       </v-form>
       <div class="align-center">
         <v-btn color="red" class="white--text" @click="toggleDriverModal">Отмена</v-btn>
@@ -166,7 +173,9 @@ export default {
 				name: '',
 				surname: '',
 				mobileNumber: '',
-				driverLicense: ''
+				driverLicense: '',
+				photo: {},
+				image: ''
 			},
 			filter: {
 				date: '',
@@ -203,6 +212,8 @@ export default {
 	      this.driver.mobileNumber = '';
 	      this.driver.driverLicense = '';
 				this.driver.password = '';
+				this.driver.photo = {};
+				this.driver.image = '';
 			}
 	    if (mode && mode === 'update') {
 	      this.driver.id = driver.id;
@@ -212,6 +223,8 @@ export default {
 				this.driver.mobileNumber = driver.mobileNumber;
 				this.driver.driverLicense = driver.driverLicense;
 				this.driver.password = '';
+				this.driver.photo = {};
+				this.driver.image = driver.photo ? `https://api.gobus.kg/public/images/${driver.photo}` : '';
 			}
 			this.$modal.toggle('driverModal');
 		},
@@ -329,5 +342,12 @@ export default {
     overflow-y: auto;
     max-height: 90vh;
   }
+}
+
+.driver-photo {
+  width: 50px;
+  height: 50px;
+  object-fit: contain;
+  border: 1px solid #d3d3d3;
 }
 </style>
