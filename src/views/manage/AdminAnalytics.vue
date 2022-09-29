@@ -66,6 +66,12 @@
       <v-btn color="primary" @click="onFilter">Фильтр</v-btn>
     </div>
     <div class="vertical-space"></div>
+    <div class="d-flex justify-end" v-if="paymentData.onlineBookingsCount || paymentData.cashBookingsCount">
+      <div>
+        <div class="d-flex payment"><h4>Кол-во оплаты онлайн:</h4><h4>{{ paymentData.onlineBookingsCount }}</h4></div>
+        <div class="d-flex payment"><h4>Кол-во оплаты наличкой:</h4><h4>{{ paymentData.cashBookingsCount }}</h4></div>
+      </div>
+    </div>
     <v-data-table
       :headers="headers"
       :items="analyticsData"
@@ -83,7 +89,7 @@ import {AnalyticsService} from "@/services/analytics.service";
 export default {
 	data() {
 		return {
-		  headers: [
+			headers: [
 				{text: 'Остановка', value: 'station.name', align: 'center'},
 				{text: 'Количество посадок', value: 'boarding', align: 'center'},
 				{text: 'Количество высадок', value: 'exiting', align: 'center'}
@@ -98,6 +104,10 @@ export default {
 				formatDateTo: '',
 				datePickerTo: false
 			},
+			paymentData: {
+				onlineBookingsCount: '',
+				cashBookingsCount: ''
+			}
 		};
 	},
 	created() {
@@ -109,6 +119,7 @@ export default {
 				this.$store.dispatch('LoaderStore/setLoader', true);
 				const resp = await AnalyticsService.fetchStationBookCount(this.queryParam);
 				this.analyticsData = resp.data?.stats;
+				this.paymentData = resp.data;
 				this.$store.dispatch('LoaderStore/setLoader', false);
 			} catch (err) {
 				this.$store.dispatch('LoaderStore/setLoader', false);
@@ -116,27 +127,41 @@ export default {
 			}
 		},
 		onFilterDate(type) {
-		  if (type === 'from') {
+			if (type === 'from') {
 				this.filter.formatDateFrom = new Date(this.filter.dateFrom).toLocaleDateString('ru-RU');
 				this.filter.datePickerFrom = false;
 			}
-		  if (type === 'to') {
+			if (type === 'to') {
 				this.filter.formatDateTo = new Date(this.filter.dateTo).toLocaleDateString('ru-RU');
 				this.filter.datePickerTo = false;
 			}
 			this.queryParam = `?date[gte]=${this.filter.dateFrom}&date[lt]=${this.filter.dateTo}`;
 		},
 		onClear() {
-		  this.filter.formatDateFrom = '';
-		  this.filter.formatDateTo = '';
+			this.filter.formatDateFrom = '';
+			this.filter.formatDateTo = '';
 			this.queryParam = '';
 			this.getAnalytics();
 		},
 		onFilter() {
-		  if (this.filter.dateFrom && this.filter.dateTo) {
-		    this.getAnalytics();
+			if (this.filter.dateFrom && this.filter.dateTo) {
+				this.getAnalytics();
 			}
 		}
 	}
 };
 </script>
+
+<style lang="scss">
+.payment {
+  h4:first-child {
+    min-width: 200px;
+    text-align: right;
+    margin-right: 8px;
+  }
+  h4:last-child {
+    min-width: 35px;
+    text-align: left;
+  }
+}
+</style>
