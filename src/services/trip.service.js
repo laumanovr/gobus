@@ -17,4 +17,9 @@ export class TripService {
 		const url = `trips/${body.id}`;
 		return sendPatchRequest(url, body);
 	}
+
+	static delete(id) {
+	  const url = `trips/${id}/archive`;
+	  return sendPatchRequest(url, {});
+	}
 }
