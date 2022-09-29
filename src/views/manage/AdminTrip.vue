@@ -68,6 +68,7 @@
           <th>Машина</th>
           <th>Цена</th>
           <th>Кол-во мест</th>
+          <th>Статус</th>
           <th></th>
         </tr>
         </thead>
@@ -86,6 +87,7 @@
             {{ trip.vehicle.capacity - trip.availableSeatsCount }}/{{ trip.vehicle.capacity }}
           </span>
           </td>
+          <td>{{ tripStatus[trip.status] }}</td>
           <td>
             <v-icon v-show="!tripTab" color="primary" class="action-icon" @click="toggleTripModal('update', trip)" title="Редактировать">
               mdi-lead-pencil
@@ -290,7 +292,12 @@ export default {
 			  'PENDING': 'Оплата',
 				'CASH': 'Наличка',
 				'SCANNED': 'Отсканировано'
-			}
+			},
+      tripStatus: {
+			  'PENDING': 'В ожидании',
+        'STARTED': 'Уехал',
+        'COMPLETED': 'Завершен'
+      }
 		};
 	},
 	async mounted() {
