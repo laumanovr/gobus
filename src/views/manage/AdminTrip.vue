@@ -168,7 +168,21 @@
           min-width="290px"
         >
           <template v-slot:activator="{ on, attrs }">
+            <v-combobox
+              v-if="mode === 'create'"
+              locale="ru-RU"
+              v-model="trip.startTimes"
+              multiple
+              chips
+              small-chips
+              label="Дата выезда"
+              readonly
+              v-bind="attrs"
+              v-on="on"
+              :rules="requiredArrayRule"
+            />
             <v-text-field
+              v-else
               label="Дата выезда"
               readonly
               v-bind="attrs"
@@ -178,6 +192,16 @@
             />
           </template>
           <v-date-picker
+            v-if="mode === 'create'"
+            locale="ru-RU"
+            v-model="trip.startTimes"
+            :min="todayDate"
+            multiple
+          >
+            <v-btn color="primary" text @click="showDatePicker=false">Сохранить</v-btn>
+          </v-date-picker>
+          <v-date-picker
+            v-else
             locale="ru-RU"
             v-model="pickerDate"
             :min="todayDate"
@@ -260,6 +284,7 @@ export default {
 	mixins: [DeleteMixin],
 	data() {
 		return {
+		  requiredArrayRule: [(v) => v.length > 0 || 'Обязательное поле'],
 			requiredRule: [(v) => !!v || 'Обязательное поле'],
 			countQuantityRule: [
 				v => !!v || 'Обязательное поле',
@@ -284,6 +309,7 @@ export default {
 				driverId: '',
 				vehicleId: '',
 				price: '',
+				startTimes: [],
 				startTime: '',
 				availableSeatsCount: 0
 			},
@@ -426,9 +452,8 @@ export default {
 		    this.trip.driverId = '';
 		    this.trip.vehicleId = '';
 		    this.trip.price = '';
-		    this.trip.startTime = '';
+		    this.trip.startTimes = [];
 				this.timeStart = '';
-				this.dateStart = '';
 			}
 		  if (mode && mode === 'update') {
 				this.trip.id = trip.id;
@@ -436,16 +461,15 @@ export default {
 				this.dateStart = new Date(trip.startTime).toLocaleDateString('ru');
 				this.pickerDate = new Date(trip.startTime).toLocaleDateString('en-CA');
 				this.timeStart = new Date(trip.startTime).toLocaleTimeString('ru');
+				this.trip.startTimes = [];
 			}
 		  if (mode && mode === 'copy') {
 				this.trip.itineraryId = trip.itinerary.id;
 				this.trip.driverId = trip.driver.id;
 				this.trip.vehicleId = trip.vehicle.id;
 				this.trip.price = trip.price;
+				this.trip.startTimes = [];
 				this.timeStart = new Date(trip.startTime).toLocaleTimeString('ru');
-				this.trip.startTime = '';
-				this.dateStart = '';
-				this.pickerDate = '';
 				this.mode = 'create';
 			}
 			this.$modal.toggle('tripModal');
@@ -460,8 +484,15 @@ export default {
 		},
 		async submitTrip() {
 			if (this.$refs.tripForm.validate()) {
-	      try {
+			  if (this.mode === 'create') {
+					this.trip.startTimes = this.trip.startTimes.map((date) => {
+						date = `${date}T${this.timeStart}`;
+						return date;
+					});
+				} else {
 					this.trip.startTime = new Date(`${this.pickerDate}T${this.timeStart}`);
+				}
+				try {
 	        await this.$store.dispatch('LoaderStore/setLoader', true);
 					await TripService[this.mode](this.trip);
 					await this.onShowActiveOrPast('active');
