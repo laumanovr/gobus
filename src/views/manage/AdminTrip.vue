@@ -142,14 +142,6 @@
             :rules="requiredRule"
           />
           <v-text-field label="Цена" type="number" v-model="trip.price" :rules="requiredRule"/>
-          <v-select
-            label="Транспорт"
-            :items="transports"
-            item-text="name"
-            item-value="id"
-            v-model="trip.vehicleId"
-            :rules="requiredRule"
-          />
         </template>
         <v-select
           label="Водитель"
@@ -157,6 +149,14 @@
           item-text="fullName"
           item-value="id"
           v-model="trip.driverId"
+          :rules="requiredRule"
+        />
+        <v-select
+          label="Транспорт"
+          :items="transports"
+          item-text="name"
+          item-value="id"
+          v-model="trip.vehicleId"
           :rules="requiredRule"
         />
         <v-menu
@@ -458,6 +458,7 @@ export default {
 		  if (mode && mode === 'update') {
 				this.trip.id = trip.id;
 				this.trip.driverId = trip.driver.id;
+				this.trip.vehicleId = trip.vehicle.id;
 				this.dateStart = new Date(trip.startTime).toLocaleDateString('ru');
 				this.pickerDate = new Date(trip.startTime).toLocaleDateString('en-CA');
 				this.timeStart = new Date(trip.startTime).toLocaleTimeString('ru');
