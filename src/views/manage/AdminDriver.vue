@@ -109,7 +109,7 @@
         <v-text-field label="Номер" type="number" v-model="driver.mobileNumber" :rules="requiredRule"/>
         <v-text-field label="E-Mail" v-model="driver.email" :rules="emailRule"/>
         <v-text-field label="Права" v-model="driver.driverLicense" :rules="requiredRule"/>
-        <v-text-field label="Пароль" v-model="driver.password" :rules="requiredRule"/>
+        <v-text-field label="Пароль" v-model="driver.password" :rules="mode === 'create' ? requiredRule : []"/>
         <v-file-input accept="image/*" label="Фото" v-model="driver.photo" v-if="!driver.image"/>
         <div class="d-flex" v-if="driver.image">
           <img class="driver-photo" :src="driver.image">
