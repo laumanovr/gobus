@@ -393,7 +393,7 @@ export default {
 			}
 		},
 		onPaginate(page) {
-			const date = this.tripTab === 'active' ? `&date[gte]=${this.todayDate}` : `&date[lt]=${this.todayDate}`;
+			const date = (this.tripTab === 'active' || !this.tripTab) ? `&date[gte]=${this.todayDate}` : `&date[lt]=${this.todayDate}`;
 			const driver = this.filter.driverId ? `&driverId=${this.filter.driverId}` : '';
 			const status = this.filter.status ? `&status=${this.filter.status}` : '';
 	    this.queryParam = `&page=${page}` + `${date}${driver}${status}`;
