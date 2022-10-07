@@ -393,10 +393,11 @@ export default {
 			}
 		},
 		onPaginate(page) {
+	    const selectedDate = this.filter.date ? `&date=${this.filter.date}` : '';
 			const date = (this.tripTab === 'active' || !this.tripTab) ? `&date[gte]=${this.todayDate}` : `&date[lt]=${this.todayDate}`;
 			const driver = this.filter.driverId ? `&driverId=${this.filter.driverId}` : '';
 			const status = this.filter.status ? `&status=${this.filter.status}` : '';
-	    this.queryParam = `&page=${page}` + `${date}${driver}${status}`;
+	    this.queryParam = `${selectedDate || date}${driver}${status}` + `&page=${page}`;
 			this.getTripList();
 		},
 		onClear(val) {
