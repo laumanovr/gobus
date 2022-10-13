@@ -496,9 +496,20 @@ export default {
 				}
 				try {
 	        await this.$store.dispatch('LoaderStore/setLoader', true);
-					await TripService[this.mode](this.trip);
-					await this.onShowActiveOrPast('active');
+					const resp = await TripService[this.mode](this.trip);
 	        this.$toast.success(this.mode === 'create' ? 'Рейс создан!' : 'Рейс обновлен!');
+					if (this.mode === 'update') {
+						this.tripList = this.tripList.map((trip) => {
+							if (trip?.id === resp?.data?.trip?.id) {
+								trip = resp.data.trip;
+								trip.dateAndTime = new Date(trip.startTime).toLocaleString('ru').slice(0, 17);
+							}
+							return trip;
+						});
+						await this.$store.dispatch('LoaderStore/setLoader', false);
+					} else {
+						await this.onShowActiveOrPast('active');
+					}
 					this.toggleTripModal();
 				} catch (err) {
 	        this.$toast.error(err);
