@@ -91,7 +91,7 @@
         <tr v-for="(trip, i) in tripList" :key="trip.id">
           <td>{{ ((page - 1) * 10) + (i + 1) }}</td>
           <td>
-            <div v-for="(item, i) in trip.itinerary.items" :key="i">{{ item.station.name }}</div>
+            <div>{{ trip.itinerary.items[0].station.name +' - '+ trip.itinerary.items.at(-1).station.name }}</div>
           </td>
           <td>{{ trip.dateAndTime }}</td>
           <td>{{ trip.driver.surname + ' ' + trip.driver.name }}</td>
