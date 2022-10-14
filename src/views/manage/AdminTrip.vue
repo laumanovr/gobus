@@ -2,6 +2,19 @@
   <div class="trip-container">
     <h2>Рейсы</h2>
     <div class="d-flex align-center">
+      <v-select
+        dense
+        solo
+        hide-details
+        class="short"
+        label="Маршрут"
+        :items="itineraries"
+        item-text="itineraryName"
+        item-value="id"
+        v-model="filter.itineraryId"
+        clearable
+        @click:clear="onClear"
+      />
       <v-menu
         v-model="filter.filterDatePicker"
         :close-on-content-click="false"
@@ -91,7 +104,7 @@
         <tr v-for="(trip, i) in tripList" :key="trip.id">
           <td>{{ ((page - 1) * 10) + (i + 1) }}</td>
           <td>
-            <div>{{ trip.itinerary.items[0].station.name +' - '+ trip.itinerary.items.at(-1).station.name }}</div>
+            <div :class="{'is-colored': trip.isSelected}">{{ trip.itinerary.items[0].station.name +' - '+ trip.itinerary.items.at(-1).station.name }}</div>
           </td>
           <td>{{ trip.dateAndTime }}</td>
           <td>{{ trip.driver.surname + ' ' + trip.driver.name }}</td>
@@ -209,6 +222,7 @@
           />
         </v-menu>
         <v-text-field v-mask="'##:##'" placeholder="00:00" label="Время выезда" v-model="timeStart" :rules="requiredRule"/>
+        <v-switch v-model="trip.isSelected" label="Выделить цветом" dense/>
       </v-form>
       <div class="align-center">
         <v-btn color="red" class="white--text" @click="toggleTripModal">Отмена</v-btn>
@@ -311,13 +325,15 @@ export default {
 				price: '',
 				startTimes: [],
 				startTime: '',
-				availableSeatsCount: 0
+				availableSeatsCount: 0,
+				isSelected: false
 			},
 			filter: {
 			  date: '',
 				formatDate: '',
 				driverId: '',
 				status: '',
+				itineraryId: '',
 				filterDatePicker: false
 			},
 			queryParam: '',
@@ -383,7 +399,8 @@ export default {
 			const date = this.filter.date ? `&date=${this.filter.date}` : '';
 			const driver = this.filter.driverId ? `&driverId=${this.filter.driverId}` : '';
 			const status = this.filter.status ? `&status=${this.filter.status}` : '';
-			this.queryParam = `${date}${driver}${status}`;
+			const itinerary = this.filter.itineraryId ? `&itineraryId=${this.filter.itineraryId}` : '';
+			this.queryParam = `${date}${driver}${status}${itinerary}`;
 			this.page = 1;
 			if (this.queryParam) {
 				this.getTripList();
@@ -397,7 +414,8 @@ export default {
 			const date = (this.tripTab === 'active' || !this.tripTab) ? `&date[gte]=${this.todayDate}` : `&date[lt]=${this.todayDate}`;
 			const driver = this.filter.driverId ? `&driverId=${this.filter.driverId}` : '';
 			const status = this.filter.status ? `&status=${this.filter.status}` : '';
-	    this.queryParam = `${selectedDate || date}${driver}${status}` + `&page=${page}`;
+			const itinerary = this.filter.itineraryId ? `&itineraryId=${this.filter.itineraryId}` : '';
+	    this.queryParam = `${selectedDate || date}${driver}${status}${itinerary}` + `&page=${page}`;
 			this.getTripList();
 		},
 		onClear(val) {
@@ -460,6 +478,7 @@ export default {
 				this.trip.id = trip.id;
 				this.trip.driverId = trip.driver.id;
 				this.trip.vehicleId = trip.vehicle.id;
+				this.trip.isSelected = trip.isSelected;
 				this.dateStart = new Date(trip.startTime).toLocaleDateString('ru');
 				this.pickerDate = new Date(trip.startTime).toLocaleDateString('en-CA');
 				this.timeStart = new Date(trip.startTime).toLocaleTimeString('ru');
@@ -470,6 +489,7 @@ export default {
 				this.trip.driverId = trip.driver.id;
 				this.trip.vehicleId = trip.vehicle.id;
 				this.trip.price = trip.price;
+				this.trip.isSelected = trip.isSelected;
 				this.trip.startTimes = [];
 				this.timeStart = new Date(trip.startTime).toLocaleTimeString('ru');
 				this.mode = 'create';
@@ -602,6 +622,10 @@ export default {
       overflow-y: auto;
       max-height: 90vh;
     }
+  }
+  .is-colored {
+    color: #0057ad;
+    font-weight: bold;
   }
 }
 </style>
