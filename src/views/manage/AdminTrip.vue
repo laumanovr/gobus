@@ -255,7 +255,7 @@
           <tbody>
           <tr v-for="(booking, i) in bookingList" :key="i">
             <td>{{ i + 1 }}</td>
-            <td>{{ booking.user ? (booking.user.name+' '+booking.user.surname) : 'NO NAME' }}</td>
+            <td>{{ showBookingName(booking) }}</td>
             <td>{{ booking.stationFrom ? booking.stationFrom.name : '' }}</td>
             <td>{{ booking.stationTo ? booking.stationTo.name : '' }}</td>
             <td>{{ status[booking.status] }}</td>
@@ -604,6 +604,16 @@ export default {
 				const tripName = itineraries[0]?.station?.name + ' - ' + itineraries[lastIndex]?.station?.name;
 				return `${tripName}, ${trip.dateAndTime}`;
 			}
+		},
+
+		showBookingName(booking) {
+			if (booking?.user) {
+				return booking?.user?.name+' '+booking?.user?.surname;
+			}
+			if (booking?.name || booking?.surname) {
+				return booking.name+' '+booking.surname;
+			}
+			return 'NO NAME';
 		},
 
 		removeTrip(tripId, isConfirm) {
