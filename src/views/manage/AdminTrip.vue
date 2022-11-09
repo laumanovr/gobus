@@ -222,7 +222,7 @@
           />
         </v-menu>
         <v-text-field v-mask="'##:##'" placeholder="00:00" label="Время выезда" v-model="timeStart" :rules="requiredRule"/>
-        <v-switch v-model="trip.isSelected" label="Выделить цветом" dense/>
+        <v-switch class="color-switcher" v-model="trip.isSelected" label="Выделить цветом" dense/>
       </v-form>
       <div class="align-center">
         <v-btn color="red" class="white--text" @click="toggleTripModal">Отмена</v-btn>
@@ -531,7 +531,7 @@ export default {
 						});
 						await this.$store.dispatch('LoaderStore/setLoader', false);
 					} else {
-						await this.onShowActiveOrPast('active');
+						await this.onShowActiveOrPast('active', this.page);
 					}
 					this.toggleTripModal();
 				} catch (err) {
@@ -586,12 +586,12 @@ export default {
 				}
 			}
 		},
-		onShowActiveOrPast(tab) {
+		onShowActiveOrPast(tab, page=1) {
 	    this.tripTab = tab;
 			this.filter.date = '';
 			this.filter.formatDate = '';
 			this.filter.driverId = '';
-			this.page = 1;
+			this.page = page;
 			const activeOrPast = tab === 'active' ? `&date[gte]=${this.todayDate}` : `&date[lt]=${this.todayDate}`;
 			this.queryParam = `&page=${this.page}` + activeOrPast;
 			this.getTripList();
@@ -639,6 +639,9 @@ export default {
   .is-colored {
     color: #0057ad;
     font-weight: bold;
+  }
+  .color-switcher {
+    max-width: 33%;
   }
 }
 </style>
