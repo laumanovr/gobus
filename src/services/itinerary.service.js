@@ -18,6 +18,11 @@ export class ItineraryService {
 		return sendPatchRequest(url, body);
 	}
 
+	static updateRoutePrices(id, body) {
+	  const url = `itineraries/${id}/routes`;
+		return sendPatchRequest(url, body);
+	}
+
 	static delete(id) {
 		const url = `itineraries/${id}/archive`;
 		return sendPatchRequest(url);
