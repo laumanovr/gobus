@@ -86,3 +86,17 @@ hr {
     border: 0;
   }
 }
+
+.margin-right {
+  &:not(:last-child) {
+    margin-right: 15px;
+  }
+}
+
+.w15p {
+  width: 15%;
+}
+
+.w35p {
+  width: 35%;
+}
