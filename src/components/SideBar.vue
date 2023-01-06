@@ -66,6 +66,11 @@ export default {
 					route: '/manage/analytics',
 					icon: 'mdi-poll'
 				},
+				{
+					name: 'Покупки',
+					route: '/manage/purchases',
+					icon: 'mdi-currency-usd'
+				}
 			]
 		};
 	},
