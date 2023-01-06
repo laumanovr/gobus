@@ -79,6 +79,14 @@ const routes = [
 				meta: {
 					requireAuth: true
 				}
+			},
+			{
+				path: 'purchases',
+				name: 'purchases',
+				component: isComponent('AdminPurchase'),
+				meta: {
+					requireAuth: true
+				}
 			}
 		]
 	}
