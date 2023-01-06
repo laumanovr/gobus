@@ -4,8 +4,8 @@ export class BookingService {
 	constructor() {
 	}
 
-	static fetchBookings(tripId) {
-		const url = `bookings?limit=100&tripId=${tripId}`;
+	static fetchBookings(queryParam='') {
+		const url = `bookings?limit=10${queryParam}`;
 		return sendGetRequest(url);
 	}
 
