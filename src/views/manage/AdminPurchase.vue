@@ -15,7 +15,7 @@
         dense
         solo
         hide-details
-        class="short"
+        class="short200px"
         label="Статус"
         :items="tripStatuses"
         item-text="name"
@@ -24,9 +24,71 @@
         clearable
         @click:clear="onClear('status')"
       />
+      <v-menu
+        v-model="filter.showDatePickerFrom"
+        :close-on-content-click="false"
+        :nudge-right="40"
+        transition="scale-transition"
+        offset-y
+        max-width="290px"
+      >
+        <template v-slot:activator="{ on, attrs }">
+          <v-text-field
+            dense
+            solo
+            class="short200px"
+            label="Дата от"
+            readonly
+            v-bind="attrs"
+            v-on="on"
+            v-model="filter.formattedDateFrom"
+            hide-details
+            clearable
+            @click:clear="onClear('date')"
+          />
+        </template>
+        <v-date-picker
+          locale="ru-RU"
+          v-model="filter.pickerDateFrom"
+          @input="onFilterDate('showDatePickerFrom', 'pickerDateFrom', 'formattedDateFrom')"
+        />
+      </v-menu>
+      <v-menu
+        v-model="filter.showDatePickerTo"
+        :close-on-content-click="false"
+        :nudge-right="40"
+        transition="scale-transition"
+        offset-y
+        max-width="290px"
+      >
+        <template v-slot:activator="{ on, attrs }">
+          <v-text-field
+            dense
+            solo
+            class="short200px"
+            label="Дата до"
+            readonly
+            v-bind="attrs"
+            v-on="on"
+            v-model="filter.formattedDateTo"
+            hide-details
+            clearable
+            @click:clear="onClear('date')"
+          />
+        </template>
+        <v-date-picker
+          locale="ru-RU"
+          v-model="filter.pickerDateTo"
+          @input="onFilterDate('showDatePickerTo', 'pickerDateTo', 'formattedDateTo')"
+        />
+      </v-menu>
       <v-btn color="primary" @click="onFilterPurchases">Поиск</v-btn>
     </div>
     <div class="vertical-space"></div>
+    <div class="align-right">
+      <h3>Всего покупок: {{ totalPurchaseCount }}</h3>
+      <h3>Общая сумма: 0</h3>
+    </div>
     <table class="table">
       <thead>
       <tr>
@@ -38,30 +100,32 @@
         <th>Кол-во мест</th>
         <th>Общая сумма</th>
         <th>Статус</th>
+        <th>Дата покупки</th>
         <th>Телефон</th>
         <th>Водитель</th>
       </tr>
       </thead>
       <tbody>
       <tr v-for="(purchase, i) in purchases" :key="i">
-        <td>{{ ((page - 1) * 10) + (i + 1) }}</td>
+        <td>{{ ((page - 1) * 20) + (i + 1) }}</td>
         <td>{{ showFullName(purchase) }}</td>
         <td>{{ purchase?.user?.email }}</td>
         <td @click="getTripBookings(purchase)" class="link-dashed">{{ showTripName(purchase) }}</td>
-        <td>{{ showTripDate(purchase) }}</td>
+        <td>{{ showDateTime(purchase?.trip?.startTime) }}</td>
         <td>{{ purchase.seatsCount }}</td>
-        <td>{{ purchase.seatsCount * purchase.trip.price }}</td>
+        <td>{{ purchase.totalPrice }}</td>
         <td>{{ status[purchase.status] }}</td>
+        <td>{{ showDateTime(purchase?.createdAt) }}</td>
         <td>{{ purchase?.user?.mobileNumber }}</td>
         <td>{{ purchase?.trip?.driver?.surname + ' ' + purchase?.trip?.driver?.name }}</td>
       </tr>
       </tbody>
     </table>
     <div class="vertical-space"></div>
-    <div class="text-center" v-if="totalPurchaseCount > 1">
+    <div class="text-center" v-if="totalPages > 1">
       <v-pagination
         v-model="page"
-        :length="totalPurchaseCount"
+        :length="totalPages"
         :total-visible="10"
         @input="onPaginate"
       />
@@ -76,7 +140,7 @@
         <h5>{{ showTripName(selectedPurchase) }}</h5>
       </div>
       <div class="align-center">
-        <h5>{{ showTripDate(selectedPurchase) }}</h5>
+        <h5>{{ showDateTime(selectedPurchase?.trip?.startTime) }}</h5>
       </div>
       <table class="table no-border">
         <thead>
@@ -125,12 +189,19 @@ export default {
 			purchases: [],
 			page: 1,
 			totalPurchaseCount: 0,
+			totalPages: 0,
 			queryParam: '',
 			selectedPurchase: {},
 			bookingList: [],
 			filter: {
 				email: '',
-				status: ''
+				status: '',
+				pickerDateFrom: '',
+				pickerDateTo: '',
+				formattedDateFrom: '',
+				formattedDateTo: '',
+				showDatePickerFrom: false,
+				showDatePickerTo: false
 			}
 		};
 	},
@@ -142,7 +213,8 @@ export default {
 			try {
 				await this.$store.dispatch('LoaderStore/setLoader', true);
 				const resp = await BookingService.fetchBookings(this.queryParam);
-				this.totalPurchaseCount = Math.ceil(resp.count / 10);
+				this.totalPurchaseCount = resp.count;
+				this.totalPages = Math.ceil(resp.count / 20);
 				this.purchases = resp.data?.bookings;
 				await this.$store.dispatch('LoaderStore/setLoader', false);
 			} catch (err) {
@@ -164,21 +236,25 @@ export default {
 			const lastItem = purchase?.trip?.itinerary?.items.at(-1);
 			return firstItem?.station.name + ' -> ' + lastItem?.station.name;
 		},
-		showTripDate(purchase) {
-			const date = new Date(purchase?.trip?.startTime);
+		showDateTime(unFormattedDate) {
+			const date = new Date(unFormattedDate);
 			return date.toLocaleString('ru').slice(0, 17);
 		},
 		onPaginate() {
 			const email = this.filter.email ? `&email=${this.filter.email}` : '';
 			const status = this.filter.status ? `&status=${this.filter.status}` : '';
-			this.queryParam = `&page=${this.page}${email}${status}`;
+			const dateFrom = this.filter.pickerDateFrom ? `&date[gte]=${this.filter.pickerDateFrom}` : '';
+			const dateTo = this.filter.pickerDateTo ? `&date[lt]=${this.filter.pickerDateTo}` : '';
+			this.queryParam = `&page=${this.page}${email}${status}${dateFrom}${dateTo}`;
 			this.fetchPurchases();
 		},
 		onFilterPurchases() {
 			this.page = 1;
 			const email = this.filter.email ? `&email=${this.filter.email}` : '';
 			const status = this.filter.status ? `&status=${this.filter.status}` : '';
-			this.queryParam = `${email}${status}`;
+			const dateFrom = this.filter.pickerDateFrom ? `&date[gte]=${this.filter.pickerDateFrom}` : '';
+			const dateTo = this.filter.pickerDateTo ? `&date[lt]=${this.filter.pickerDateTo}` : '';
+			this.queryParam = `${email}${status}${dateFrom}${dateTo}`;
 			this.fetchPurchases();
 		},
 		onClear(type) {
@@ -211,6 +287,10 @@ export default {
 				return booking.name + ' ' + booking.surname;
 			}
 			return 'NO NAME';
+		},
+		onFilterDate(showDatePicker, pickerDate, formatDate) {
+			this.filter[formatDate] = new Date(this.filter[pickerDate]).toLocaleDateString('ru-RU');
+			this.filter[showDatePicker] = false;
 		},
 	}
 };
