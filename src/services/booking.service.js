@@ -5,7 +5,7 @@ export class BookingService {
 	}
 
 	static fetchBookings(queryParam='') {
-		const url = `bookings?limit=10${queryParam}`;
+		const url = `bookings?limit=20${queryParam}`;
 		return sendGetRequest(url);
 	}
 
