@@ -166,7 +166,7 @@ export default {
 		},
 		showTripDate(purchase) {
 			const date = new Date(purchase?.trip?.startTime);
-			return date.toLocaleDateString('ru');
+			return date.toLocaleString('ru').slice(0, 17);
 		},
 		onPaginate() {
 			const email = this.filter.email ? `&email=${this.filter.email}` : '';
