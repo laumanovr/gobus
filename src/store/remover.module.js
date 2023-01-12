@@ -1,6 +1,7 @@
 const state = {
 	deleteItemId: '',
 	selectedService: {},
+	body: {},
 	onDelete: 0
 };
 
@@ -13,6 +14,9 @@ const actions = {
 	},
 	setDeleteKey({commit}, value) {
 		commit('UPDATE_DELETE_KEY', value);
+	},
+	setDeleteBody({commit}, value) {
+	  commit('UPDATE_DELETE_BODY', value);
 	}
 };
 
@@ -25,6 +29,9 @@ const mutations = {
 	},
 	UPDATE_DELETE_KEY(state, value) {
 		state.onDelete = value;
+	},
+	UPDATE_DELETE_BODY(state, value) {
+	  state.body = value;
 	}
 };
 
