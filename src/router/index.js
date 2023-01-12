@@ -87,6 +87,14 @@ const routes = [
 				meta: {
 					requireAuth: true
 				}
+			},
+			{
+				path: 'partners',
+				name: 'partners',
+				component: isComponent('AdminPartner'),
+				meta: {
+					requireAuth: true
+				}
 			}
 		]
 	}
