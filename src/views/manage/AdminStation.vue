@@ -40,6 +40,8 @@
           readonly
           @click="toggleMapModal"
         />
+        <v-text-field label="Адрес остановки" v-model="station.address" />
+        <v-text-field label="Ссылка на остановку" v-model="station.url" />
       </v-form>
       <div class="align-center">
         <v-btn color="red" class="white--text" @click="toggleStationModal">Отмена</v-btn>
@@ -89,7 +91,9 @@ export default {
 			station: {
 				name: '',
 				lat: 0,
-				lng: 0
+				lng: 0,
+				address: '',
+				url: ''
 			},
 			zoom: 12,
 			center: L.latLng(42.882004, 74.582748),
@@ -110,6 +114,8 @@ export default {
 		    this.station.name = '';
 		    this.station.lat = '';
 		    this.station.lng = '';
+		    this.station.address = '';
+		    this.station.url = '';
 		    this.stationCoordinate = '';
 				this.markerLocation = L.latLng(0, 0);
 			}
@@ -118,6 +124,8 @@ export default {
 		    this.station.name = station.name;
 		    this.station.lat = station.lat;
 		    this.station.lng = station.lng;
+				this.station.address = station.address;
+				this.station.url = station.url;
 		    this.stationCoordinate = `${station.lat}, - ${station.lng}`;
 		    this.markerLocation = L.latLng(station.lat, station.lng);
 			}
