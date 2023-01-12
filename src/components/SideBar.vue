@@ -70,6 +70,11 @@ export default {
 					name: 'Покупки',
 					route: '/manage/purchases',
 					icon: 'mdi-currency-usd'
+				},
+				{
+					name: 'Партнеры',
+					route: '/manage/partners',
+					icon: 'mdi-handshake-outline'
 				}
 			]
 		};
