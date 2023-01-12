@@ -1,25 +1,20 @@
 import {sendGetRequest, sendPostRequest, sendPatchRequest} from "@/services/api.service";
 
-export class PartnerService {
+export class CouponService {
 	constructor() {}
 
-	static fetchPartnerList() {
-		const url = 'partners?limit=100';
+	static fetchCouponList(partnerId='') {
+		const url = `coupons?partnerId=${partnerId}`;
 		return sendGetRequest(url);
 	}
 
 	static create(body) {
-		const url = 'partners';
+		const url = 'coupons';
 		return sendPostRequest(url, body);
 	}
 
-	static update(body) {
-	  const url = `partners/${body.id}`;
-	  return sendPatchRequest(url, body);
-	}
-
 	static delete(id, body) {
-		const url = `partners/${id}`;
+		const url = `coupons/${id}`;
 		return sendPatchRequest(url, body);
 	}
 }
