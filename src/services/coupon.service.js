@@ -8,6 +8,11 @@ export class CouponService {
 		return sendGetRequest(url);
 	}
 
+	static fetchCouponBookings(couponId) {
+	  const url = `coupons/${couponId}/bookings`;
+	  return sendGetRequest(url);
+  }
+
 	static create(body) {
 		const url = 'coupons';
 		return sendPostRequest(url, body);
