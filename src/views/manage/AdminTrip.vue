@@ -172,6 +172,15 @@
           v-model="trip.vehicleId"
           :rules="requiredRule"
         />
+        <v-select
+          label="Статус"
+          :items="tripStatuses"
+          item-text="name"
+          item-value="val"
+          v-model="trip.status"
+          :rules="requiredRule"
+          v-if="mode === 'update'"
+        />
         <v-menu
           v-model="showDatePicker"
           :close-on-content-click="false"
@@ -326,7 +335,8 @@ export default {
 				startTimes: [],
 				startTime: '',
 				availableSeatsCount: 0,
-				isSelected: false
+				isSelected: false,
+        status: ''
 			},
 			filter: {
 			  date: '',
@@ -474,6 +484,7 @@ export default {
 		    this.trip.driverId = '';
 		    this.trip.vehicleId = '';
 		    this.trip.price = '';
+		    this.trip.status = '';
 		    this.trip.startTimes = [];
 				this.timeStart = '';
 			}
@@ -482,6 +493,7 @@ export default {
 				this.trip.driverId = trip.driver.id;
 				this.trip.vehicleId = trip.vehicle.id;
 				this.trip.isSelected = trip.isSelected;
+				this.trip.status = trip.status;
 				this.dateStart = new Date(trip.startTime).toLocaleDateString('ru');
 				this.pickerDate = new Date(trip.startTime).toLocaleDateString('en-CA');
 				this.timeStart = new Date(trip.startTime).toLocaleTimeString('ru');
@@ -492,6 +504,7 @@ export default {
 				this.trip.driverId = trip.driver.id;
 				this.trip.vehicleId = trip.vehicle.id;
 				this.trip.price = trip.price;
+        this.trip.status = '';
 				this.trip.isSelected = trip.isSelected;
 				this.trip.startTimes = [];
 				this.timeStart = new Date(trip.startTime).toLocaleTimeString('ru');
