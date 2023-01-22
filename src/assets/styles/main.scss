@@ -27,6 +27,10 @@ h2 {
   margin-right: 12px;
 }
 
+.no-touch {
+  pointer-events: none;
+}
+
 hr {
   margin: 10px 0;
 }
