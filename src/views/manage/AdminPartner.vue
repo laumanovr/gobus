@@ -45,7 +45,7 @@
       </div>
     </modal>
     <!--Coupon Modal-->
-    <modal name="coupon-modal" height="auto" width="700" @before-close="selectedPartner={}">
+    <modal name="coupon-modal" class="coupon-modal" height="auto" width="800" @before-close="selectedPartner={}">
       <div class="align-center">
         <h3 v-if="couponModalMode === 'list'">Купоны: {{ selectedPartner?.partnerName }}</h3>
         <h3 v-else>Добавить купон</h3>
@@ -68,6 +68,8 @@
             <th>№</th>
             <th>Название</th>
             <th>Скидка %</th>
+            <th><div>Кол-во</div><div>продано</div></th>
+            <th><div>Заработанная</div><div>сумма</div></th>
             <th></th>
           </tr>
           </thead>
@@ -76,6 +78,8 @@
             <td>{{ i + 1 }}</td>
             <td>{{ coupon.name }}</td>
             <td>{{ coupon.discount }}</td>
+            <td>{{ coupon.bookingsCount }}</td>
+            <td>{{ coupon.bookingsAmount }}</td>
             <td>
               <v-icon color="red" class="action-icon" title="Удалить" @click="removeCoupon(coupon.id, true)">
                 mdi-delete
@@ -89,7 +93,7 @@
       <template v-if="couponModalMode === 'add'">
         <v-form ref="couponForm">
           <v-text-field label="Название купона" v-model="coupon.name" :rules="requiredRule"/>
-          <v-text-field label="Скидка %" v-model.number="coupon.discount" :rules="requiredRule" type="number"/>
+          <v-text-field label="Скидка %" v-model.number="coupon.discount" :rules="discountRule" type="number" hint="min: 0, max: 100"/>
         </v-form>
         <div class="align-center">
           <v-btn color="red white--text" @click="toggleCouponModal">Отмена</v-btn>
@@ -110,6 +114,7 @@ export default {
 	data() {
 		return {
 			requiredRule: [(v) => !!v || 'Обязательное поле'],
+      discountRule: [(v) => !!v || 'Обязательное поле', (v) => (v && v > 0 && v <= 100) || 'Неправильное значение'],
 			partners: [],
 			coupons: [],
 			couponModalMode: 'list',
@@ -231,3 +236,12 @@ export default {
 	}
 };
 </script>
+
+<style lang="scss">
+.coupon-modal {
+  .vm--modal {
+    overflow-y: auto;
+    max-height: 90vh;
+  }
+}
+</style>
