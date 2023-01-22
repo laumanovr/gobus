@@ -45,10 +45,17 @@
       </div>
     </modal>
     <!--Coupon Modal-->
-    <modal name="coupon-modal" class="coupon-modal" height="auto" width="800" @before-close="selectedPartner={}">
+    <modal
+      name="coupon-modal"
+      class="coupon-modal"
+      height="auto"
+      width="1200"
+      @before-close="selectedPartner={}"
+    >
       <div class="align-center">
         <h3 v-if="couponModalMode === 'list'">Купоны: {{ selectedPartner?.partnerName }}</h3>
-        <h3 v-else>Добавить купон</h3>
+        <h3 v-else-if="couponModalMode === 'add'">Добавить купон</h3>
+        <h3 v-else>Покупки по купону: {{selectedCoupon.name}}</h3>
       </div>
       <div class="align-right" v-if="couponModalMode === 'list'">
         <v-btn color="primary" small @click="changeCouponMode('add')">
@@ -69,7 +76,6 @@
             <th>Название</th>
             <th>Скидка %</th>
             <th><div>Кол-во</div><div>продано</div></th>
-            <th><div>Заработанная</div><div>сумма</div></th>
             <th></th>
           </tr>
           </thead>
@@ -78,8 +84,11 @@
             <td>{{ i + 1 }}</td>
             <td>{{ coupon.name }}</td>
             <td>{{ coupon.discount }}</td>
-            <td>{{ coupon.bookingsCount }}</td>
-            <td>{{ coupon.bookingsAmount }}</td>
+            <td>
+              <span :class="coupon.bookingsCount ? 'link-dashed' : 'no-touch'" @click="getCouponBookings(coupon)">
+                {{ coupon.bookingsCount }}
+              </span>
+            </td>
             <td>
               <v-icon color="red" class="action-icon" title="Удалить" @click="removeCoupon(coupon.id, true)">
                 mdi-delete
@@ -100,6 +109,38 @@
           <v-btn color="success" @click="submitCoupon">Подтвердить</v-btn>
         </div>
       </template>
+      <template v-if="couponModalMode === 'bookings'">
+        <table class="table no-border">
+          <thead>
+          <tr>
+            <th>№</th>
+            <th>ФИО</th>
+            <th>Рейс</th>
+            <th>Дата рейса</th>
+            <th><div>Кол-во</div><div>мест</div></th>
+            <th><div>Общая</div><div>сумма</div></th>
+            <th>Промо | %</th>
+            <th>Скидка</th>
+            <th><div>Заработанная</div><div>сумма</div></th>
+            <th>Дата активации</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr v-for="(booking, i) in couponBookings" :key="i">
+            <td>{{ i + 1 }}</td>
+            <td>{{ showFullName(booking) }}</td>
+            <td>{{ booking.stationFrom.name+' - '+booking.stationTo.name }}</td>
+            <td>{{ showDateTime(booking.trip.startTime) }}</td>
+            <td>{{ booking.seatsCount }}</td>
+            <td>{{ booking.ticketPrice * booking.seatsCount }}</td>
+            <td>{{ selectedCoupon.name +' | '+ selectedCoupon.discount }}</td>
+            <td>{{ booking.discountAmount }}</td>
+            <td>{{ booking.totalPrice }}</td>
+            <td>{{ showDateTime(booking.createdAt) }}</td>
+          </tr>
+          </tbody>
+        </table>
+      </template>
     </modal>
   </div>
 </template>
@@ -114,12 +155,14 @@ export default {
 	data() {
 		return {
 			requiredRule: [(v) => !!v || 'Обязательное поле'],
-      discountRule: [(v) => !!v || 'Обязательное поле', (v) => (v && v > 0 && v <= 100) || 'Неправильное значение'],
+			discountRule: [(v) => !!v || 'Обязательное поле', (v) => (v && v > 0 && v <= 100) || 'Неправильное значение'],
 			partners: [],
 			coupons: [],
+			couponBookings: [],
 			couponModalMode: 'list',
 			partnerMode: '',
 			selectedPartner: {},
+			selectedCoupon: {},
 			partner: {
 				email: '',
 				password: '',
@@ -224,7 +267,33 @@ export default {
 		removeCoupon(id, isConfirm) {
 			const body = {isActive: false};
 			this.deleteItem(CouponService, id, isConfirm, body);
-		}
+		},
+		async getCouponBookings(coupon) {
+		  try {
+				await this.$store.dispatch('LoaderStore/setLoader', true);
+				this.selectedCoupon = coupon;
+				const resp = await CouponService.fetchCouponBookings(coupon.id);
+				this.couponBookings = resp?.data?.coupon.bookings;
+				this.couponModalMode = 'bookings';
+				await this.$store.dispatch('LoaderStore/setLoader', false);
+			} catch (err) {
+				await this.$store.dispatch('LoaderStore/setLoader', false);
+				this.$toast.error(err);
+			}
+		},
+		showFullName(booking) {
+			if (booking?.user) {
+				return booking.user.surname + ' ' + booking.user.name;
+			}
+			if (booking?.surname) {
+				return booking.surname + ' ' + booking.name;
+			}
+			return 'NO NAME';
+		},
+		showDateTime(unFormattedDate) {
+			const date = new Date(unFormattedDate);
+			return date.toLocaleString('ru').slice(0, 17);
+		},
 	},
 	watch: {
 		onDelete() {
