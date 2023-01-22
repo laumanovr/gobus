@@ -85,7 +85,7 @@
       <v-btn color="primary" @click="onFilterPurchases">Поиск</v-btn>
     </div>
     <div class="vertical-space"></div>
-    <div class="align-right">
+    <div class="align-left">
       <h3>Всего покупок: {{ totalPurchaseCount }}</h3>
       <h3>Общая сумма: 0</h3>
     </div>
