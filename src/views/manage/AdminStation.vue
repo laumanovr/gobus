@@ -29,8 +29,18 @@
       </div>
       <v-form ref="stationForm">
         <v-text-field
-          label="Название"
+          label="Название (Русский)"
           v-model="station.name"
+          :rules="requiredRule"
+        />
+        <v-text-field
+          label="Название (Кыргызча)"
+          v-model="station.nameKy"
+          :rules="requiredRule"
+        />
+        <v-text-field
+          label="Название (English)"
+          v-model="station.nameEn"
           :rules="requiredRule"
         />
         <v-text-field
@@ -90,6 +100,8 @@ export default {
 			stationCoordinate: '',
 			station: {
 				name: '',
+        nameEn: '',
+        nameKy: '',
 				lat: 0,
 				lng: 0,
 				address: '',
@@ -112,6 +124,8 @@ export default {
 		  this.mode = mode;
 		  if (mode && mode === 'create') {
 		    this.station.name = '';
+		    this.station.nameEn = '';
+		    this.station.nameKy = '';
 		    this.station.lat = '';
 		    this.station.lng = '';
 		    this.station.address = '';
@@ -122,6 +136,8 @@ export default {
 		  if (mode && mode === 'update') {
 		    this.station.id = station.id;
 		    this.station.name = station.name;
+		    this.station.nameEn = station.nameEn;
+		    this.station.nameKy = station.nameKy;
 		    this.station.lat = station.lat;
 		    this.station.lng = station.lng;
 				this.station.address = station.address;
