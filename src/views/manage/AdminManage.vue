@@ -1,6 +1,6 @@
 <template>
   <div class="manage-container">
-    <Sidebar />
+    <Sidebar role="admin" />
     <div class="main-content">
       <router-view />
     </div>
