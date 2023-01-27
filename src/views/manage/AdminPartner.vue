@@ -76,6 +76,7 @@
             <th>Название</th>
             <th>Скидка %</th>
             <th><div>Кол-во</div><div>продано</div></th>
+            <th><div>Заработанная</div>сумма</th>
             <th></th>
           </tr>
           </thead>
@@ -89,6 +90,7 @@
                 {{ coupon.bookingsCount }}
               </span>
             </td>
+            <td>{{ coupon.bookingsAmount }}</td>
             <td>
               <v-icon color="red" class="action-icon" title="Удалить" @click="removeCoupon(coupon.id, true)">
                 mdi-delete
@@ -120,7 +122,6 @@
             <th><div>Кол-во</div><div>мест</div></th>
             <th><div>Общая</div><div>сумма</div></th>
             <th>Промо | %</th>
-            <th>Скидка</th>
             <th><div>Заработанная</div><div>сумма</div></th>
             <th>Дата активации</th>
           </tr>
@@ -135,7 +136,6 @@
             <td>{{ booking.ticketPrice * booking.seatsCount }}</td>
             <td>{{ selectedCoupon.name +' | '+ selectedCoupon.discount }}</td>
             <td>{{ booking.discountAmount }}</td>
-            <td>{{ booking.totalPrice }}</td>
             <td>{{ showDateTime(booking.createdAt) }}</td>
           </tr>
           </tbody>
