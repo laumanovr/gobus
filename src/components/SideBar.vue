@@ -2,13 +2,14 @@
   <div class="sidebar-container">
     <div class="profile-data">
       <div class="profile-name">
-        Admin GoBus
+        {{role === 'admin' ? 'Admin GoBus' : 'Партнер GoBus'}}
+        <div class="profile-email">{{currentUser.email}}</div>
       </div>
     </div>
     <div class="tabs">
       <div
         class="tab"
-        v-for="(item, i) in sidebars"
+        v-for="(item, i) in sidebar[role]"
         :key="i"
         :class="{ active: isActive(item) }"
         @click="navToRoute(item)"
@@ -28,57 +29,74 @@
 import {LoginService} from "@/services/login.service";
 
 export default {
+  props: {
+    role: String
+  },
 	data() {
 		return {
-			sidebars: [
-				{
-					name: 'Пассажиры',
-					route: '/manage',
-					icon: 'mdi-account-group'
-				},
-				{
-					name: 'Водители',
-					route: '/manage/driver',
-					icon: 'mdi-card-account-details-outline'
-				},
-				{
-					name: 'Рейсы',
-					route: '/manage/trip',
-					icon: 'mdi-map-clock'
-				},
-				{
-					name: 'Маршруты',
-					route: '/manage/itinerary',
-					icon: 'mdi-map-marker-path'
-				},
-				{
-					name: 'Остановки',
-					route: '/manage/stations',
-					icon: 'mdi-bus-stop'
-				},
-				{
-					name: 'Транспорт',
-					route: '/manage/transport',
-					icon: 'mdi-train-car'
-				},
-				{
-					name: 'Аналитика',
-					route: '/manage/analytics',
-					icon: 'mdi-poll'
-				},
-				{
-					name: 'Покупки',
-					route: '/manage/purchases',
-					icon: 'mdi-currency-usd'
-				},
-				{
-					name: 'Партнеры',
-					route: '/manage/partners',
-					icon: 'mdi-handshake-outline'
-				}
-			]
+			sidebar: {
+			  admin: [
+          {
+            name: 'Пассажиры',
+            route: '/manage',
+            icon: 'mdi-account-group'
+          },
+          {
+            name: 'Водители',
+            route: '/manage/driver',
+            icon: 'mdi-card-account-details-outline'
+          },
+          {
+            name: 'Рейсы',
+            route: '/manage/trip',
+            icon: 'mdi-map-clock'
+          },
+          {
+            name: 'Маршруты',
+            route: '/manage/itinerary',
+            icon: 'mdi-map-marker-path'
+          },
+          {
+            name: 'Остановки',
+            route: '/manage/stations',
+            icon: 'mdi-bus-stop'
+          },
+          {
+            name: 'Транспорт',
+            route: '/manage/transport',
+            icon: 'mdi-train-car'
+          },
+          {
+            name: 'Аналитика',
+            route: '/manage/analytics',
+            icon: 'mdi-poll'
+          },
+          {
+            name: 'Покупки',
+            route: '/manage/purchases',
+            icon: 'mdi-currency-usd'
+          },
+          {
+            name: 'Партнеры',
+            route: '/manage/partners',
+            icon: 'mdi-handshake-outline'
+          }
+        ],
+        partner: [
+          {
+            name: 'Купоны',
+            route: '/partner-manage',
+            icon: 'mdi-handshake-outline'
+          }
+        ]
+      }
 		};
 	},
+  computed: {
+    currentUser() {
+      return JSON.parse(window.localStorage.getItem('busAdmin'));
+    }
+  },
 	methods: {
 		isActive(item) {
 			return this.$route.path === item.route;
@@ -109,6 +127,9 @@ export default {
       font-size: 20px;
       padding: 8px 0;
       text-align: center;
+    }
+    .profile-email {
+      font-size: 14px;
     }
   }
   .tabs {
