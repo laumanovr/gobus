@@ -336,7 +336,7 @@ export default {
 				startTime: '',
 				availableSeatsCount: 0,
 				isSelected: false,
-        status: ''
+				status: ''
 			},
 			filter: {
 			  date: '',
@@ -504,7 +504,7 @@ export default {
 				this.trip.driverId = trip.driver.id;
 				this.trip.vehicleId = trip.vehicle.id;
 				this.trip.price = trip.price;
-        this.trip.status = '';
+				this.trip.status = '';
 				this.trip.isSelected = trip.isSelected;
 				this.trip.startTimes = [];
 				this.timeStart = new Date(trip.startTime).toLocaleTimeString('ru');

@@ -66,62 +66,62 @@
 <script>
 import {CouponService} from "@/services/coupon.service";
 export default {
-  data() {
-    return {
-      coupons: [],
-      couponBookings: [],
-      selectedCoupon: {}
-    }
-  },
-  computed: {
-    currentUser() {
-      return JSON.parse(window.localStorage.getItem('busAdmin'));
-    }
-  },
-  mounted() {
-    this.getMyCoupons();
-  },
-  methods: {
-    async getMyCoupons() {
-      try {
-        await this.$store.dispatch('LoaderStore/setLoader', true);
-        const resp = await CouponService.fetchCouponList(this.currentUser.id);
-        this.coupons = resp.data?.coupons;
-        await this.$store.dispatch('LoaderStore/setLoader', false);
-      } catch (err) {
-        await this.$store.dispatch('LoaderStore/setLoader', false);
-        this.$toast.error(err);
-      }
-    },
-    async getCouponBookings(coupon) {
-      try {
-        await this.$store.dispatch('LoaderStore/setLoader', true);
-        this.selectedCoupon = coupon;
-        const resp = await CouponService.fetchCouponBookings(coupon.id);
-        this.couponBookings = resp?.data?.coupon.bookings;
-        await this.$store.dispatch('LoaderStore/setLoader', false);
-        this.togglePartnerCouponModal();
-      } catch (err) {
-        await this.$store.dispatch('LoaderStore/setLoader', false);
-        this.$toast.error(err);
-      }
-    },
-    togglePartnerCouponModal() {
-      this.$modal.toggle('partner-coupon-modal');
-    },
-    showFullName(booking) {
-      if (booking?.user) {
-        return booking.user.surname + ' ' + booking.user.name;
-      }
-      if (booking?.surname) {
-        return booking.surname + ' ' + booking.name;
-      }
-      return 'NO NAME';
-    },
-    showDateTime(unFormattedDate) {
-      const date = new Date(unFormattedDate);
-      return date.toLocaleString('ru').slice(0, 17);
-    },
-  }
-}
+	data() {
+		return {
+			coupons: [],
+			couponBookings: [],
+			selectedCoupon: {}
+		};
+	},
+	computed: {
+		currentUser() {
+			return JSON.parse(window.localStorage.getItem('busAdmin'));
+		}
+	},
+	mounted() {
+		this.getMyCoupons();
+	},
+	methods: {
+		async getMyCoupons() {
+			try {
+				await this.$store.dispatch('LoaderStore/setLoader', true);
+				const resp = await CouponService.fetchCouponList(this.currentUser.id);
+				this.coupons = resp.data?.coupons;
+				await this.$store.dispatch('LoaderStore/setLoader', false);
+			} catch (err) {
+				await this.$store.dispatch('LoaderStore/setLoader', false);
+				this.$toast.error(err);
+			}
+		},
+		async getCouponBookings(coupon) {
+			try {
+				await this.$store.dispatch('LoaderStore/setLoader', true);
+				this.selectedCoupon = coupon;
+				const resp = await CouponService.fetchCouponBookings(coupon.id);
+				this.couponBookings = resp?.data?.coupon.bookings;
+				await this.$store.dispatch('LoaderStore/setLoader', false);
+				this.togglePartnerCouponModal();
+			} catch (err) {
+				await this.$store.dispatch('LoaderStore/setLoader', false);
+				this.$toast.error(err);
+			}
+		},
+		togglePartnerCouponModal() {
+			this.$modal.toggle('partner-coupon-modal');
+		},
+		showFullName(booking) {
+			if (booking?.user) {
+				return booking.user.surname + ' ' + booking.user.name;
+			}
+			if (booking?.surname) {
+				return booking.surname + ' ' + booking.name;
+			}
+			return 'NO NAME';
+		},
+		showDateTime(unFormattedDate) {
+			const date = new Date(unFormattedDate);
+			return date.toLocaleString('ru').slice(0, 17);
+		},
+	}
+};
 </script>

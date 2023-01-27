@@ -29,74 +29,74 @@
 import {LoginService} from "@/services/login.service";
 
 export default {
-  props: {
-    role: String
-  },
+	props: {
+		role: String
+	},
 	data() {
 		return {
 			sidebar: {
 			  admin: [
-          {
-            name: 'Пассажиры',
-            route: '/manage',
-            icon: 'mdi-account-group'
-          },
-          {
-            name: 'Водители',
-            route: '/manage/driver',
-            icon: 'mdi-card-account-details-outline'
-          },
-          {
-            name: 'Рейсы',
-            route: '/manage/trip',
-            icon: 'mdi-map-clock'
-          },
-          {
-            name: 'Маршруты',
-            route: '/manage/itinerary',
-            icon: 'mdi-map-marker-path'
-          },
-          {
-            name: 'Остановки',
-            route: '/manage/stations',
-            icon: 'mdi-bus-stop'
-          },
-          {
-            name: 'Транспорт',
-            route: '/manage/transport',
-            icon: 'mdi-train-car'
-          },
-          {
-            name: 'Аналитика',
-            route: '/manage/analytics',
-            icon: 'mdi-poll'
-          },
-          {
-            name: 'Покупки',
-            route: '/manage/purchases',
-            icon: 'mdi-currency-usd'
-          },
-          {
-            name: 'Партнеры',
-            route: '/manage/partners',
-            icon: 'mdi-handshake-outline'
-          }
-        ],
-        partner: [
-          {
-            name: 'Купоны',
-            route: '/partner-manage',
-            icon: 'mdi-handshake-outline'
-          }
-        ]
-      }
+					{
+						name: 'Пассажиры',
+						route: '/manage',
+						icon: 'mdi-account-group'
+					},
+					{
+						name: 'Водители',
+						route: '/manage/driver',
+						icon: 'mdi-card-account-details-outline'
+					},
+					{
+						name: 'Рейсы',
+						route: '/manage/trip',
+						icon: 'mdi-map-clock'
+					},
+					{
+						name: 'Маршруты',
+						route: '/manage/itinerary',
+						icon: 'mdi-map-marker-path'
+					},
+					{
+						name: 'Остановки',
+						route: '/manage/stations',
+						icon: 'mdi-bus-stop'
+					},
+					{
+						name: 'Транспорт',
+						route: '/manage/transport',
+						icon: 'mdi-train-car'
+					},
+					{
+						name: 'Аналитика',
+						route: '/manage/analytics',
+						icon: 'mdi-poll'
+					},
+					{
+						name: 'Покупки',
+						route: '/manage/purchases',
+						icon: 'mdi-currency-usd'
+					},
+					{
+						name: 'Партнеры',
+						route: '/manage/partners',
+						icon: 'mdi-handshake-outline'
+					}
+				],
+				partner: [
+					{
+						name: 'Купоны',
+						route: '/partner-manage',
+						icon: 'mdi-handshake-outline'
+					}
+				]
+			}
 		};
 	},
-  computed: {
-    currentUser() {
-      return JSON.parse(window.localStorage.getItem('busAdmin'));
-    }
-  },
+	computed: {
+		currentUser() {
+			return JSON.parse(window.localStorage.getItem('busAdmin'));
+		}
+	},
 	methods: {
 		isActive(item) {
 			return this.$route.path === item.route;

@@ -98,24 +98,24 @@ const routes = [
 			}
 		]
 	},
-  // PARTNER
-  {
-    path: '/partner-manage',
-    component: () => import('@/views/manage/partner/PartnerManage.vue'),
-    beforeEnter: (to, from, next) => {
-      checkPermission(to, from, next);
-    },
-    children: [
-      {
-        path: '',
-        name: 'partner-coupons',
-        component: () => import('@/views/manage/partner/PartnerCoupon.vue'),
-        meta: {
-          requireAuth: true
-        }
-      }
-    ]
-  }
+	// PARTNER
+	{
+		path: '/partner-manage',
+		component: () => import('@/views/manage/partner/PartnerManage.vue'),
+		beforeEnter: (to, from, next) => {
+			checkPermission(to, from, next);
+		},
+		children: [
+			{
+				path: '',
+				name: 'partner-coupons',
+				component: () => import('@/views/manage/partner/PartnerCoupon.vue'),
+				meta: {
+					requireAuth: true
+				}
+			}
+		]
+	}
 ];
 
 const router = new VueRouter({

@@ -100,8 +100,8 @@ export default {
 			stationCoordinate: '',
 			station: {
 				name: '',
-        nameEn: '',
-        nameKy: '',
+				nameEn: '',
+				nameKy: '',
 				lat: 0,
 				lng: 0,
 				address: '',
