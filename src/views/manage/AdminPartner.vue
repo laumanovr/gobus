@@ -69,6 +69,10 @@
       </div>
       <div class="vertical-space"></div>
       <template v-if="couponModalMode === 'list'">
+        <div class="align-left">
+          <h3>Всего продано: {{totalBookingsCount}}</h3>
+          <h3>Всего заработано: {{totalBookingsAmount}}</h3>
+        </div>
         <table class="table no-border">
           <thead>
           <tr>
@@ -112,6 +116,10 @@
         </div>
       </template>
       <template v-if="couponModalMode === 'bookings'">
+        <div class="align-left">
+          <h3>Всего продано: {{couponBookings.length}}</h3>
+          <h3>Всего заработано: {{totalCouponBookingsSum}}</h3>
+        </div>
         <table class="table no-border">
           <thead>
           <tr>
@@ -163,6 +171,9 @@ export default {
 			partnerMode: '',
 			selectedPartner: {},
 			selectedCoupon: {},
+			totalBookingsCount: 0,
+			totalBookingsAmount: 0,
+			totalCouponBookingsSum: 0,
 			partner: {
 				email: '',
 				password: '',
@@ -234,11 +245,21 @@ export default {
 				await this.$store.dispatch('LoaderStore/setLoader', false);
 				if (isToggleModal) {
 					this.toggleCouponModal();
+					this.countTotalBookings();
+					this.countTotalAmount();
 				}
 			} catch (err) {
 				await this.$store.dispatch('LoaderStore/setLoader', false);
 				this.$toast.error(err);
 			}
+		},
+		countTotalBookings() {
+			this.totalBookingsCount = 0;
+		  this.coupons.forEach((item) => this.totalBookingsCount += item.bookingsCount);
+		},
+		countTotalAmount() {
+			this.totalBookingsAmount = 0;
+		  this.coupons.forEach((item) => this.totalBookingsAmount += item.bookingsAmount);
 		},
 		toggleCouponModal() {
 			this.$modal.toggle('coupon-modal');
@@ -271,10 +292,12 @@ export default {
 		async getCouponBookings(coupon) {
 		  try {
 				await this.$store.dispatch('LoaderStore/setLoader', true);
+				this.totalCouponBookingsSum = 0;
 				this.selectedCoupon = coupon;
 				const resp = await CouponService.fetchCouponBookings(coupon.id);
 				this.couponBookings = resp?.data?.coupon.bookings;
 				this.couponModalMode = 'bookings';
+				this.couponBookings.forEach((item) => this.totalCouponBookingsSum += item.discountAmount);
 				await this.$store.dispatch('LoaderStore/setLoader', false);
 			} catch (err) {
 				await this.$store.dispatch('LoaderStore/setLoader', false);
