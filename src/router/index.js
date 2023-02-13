@@ -95,6 +95,22 @@ const routes = [
 				meta: {
 					requireAuth: true
 				}
+			},
+			{
+				path: 'accounting',
+				name: 'accounting',
+				component: isComponent('AdminAccounting'),
+				meta: {
+					requireAuth: true
+				}
+			},
+			{
+				path: 'carrier',
+				name: 'carrier',
+				component: isComponent('AdminCarrier'),
+				meta: {
+					requireAuth: true
+				}
 			}
 		]
 	},
