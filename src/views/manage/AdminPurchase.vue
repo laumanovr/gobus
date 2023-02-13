@@ -179,12 +179,14 @@ export default {
 			status: {
 				'PENDING': 'Оплата',
 				'CASH': 'Наличка',
-				'SCANNED': 'Отсканирован'
+				'SCANNED': 'Отсканирован',
+				'OTHER': 'Иное'
 			},
 			tripStatuses: [
 				{name: 'Оплата', val: 'PENDING'},
 				{name: 'Наличка', val: 'CASH'},
-				{name: 'Отсканирован', val: 'SCANNED'}
+				{name: 'Отсканирован', val: 'SCANNED'},
+				{name: 'Иное', val: 'OTHER'}
 			],
 			purchases: [],
 			page: 1,
