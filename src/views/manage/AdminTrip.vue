@@ -364,7 +364,7 @@ export default {
 				seatsCount: '',
 				name: '',
 				surname: '',
-        otherAmount: '',
+				otherAmount: '',
 				stationFromId: 0,
 				stationToId: 0
 			},
