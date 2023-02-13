@@ -289,8 +289,8 @@
           <v-text-field label="Имя" v-model="booking.name" :rules="requiredRule" />
           <v-text-field label="Фамилия" v-model="booking.surname" :rules="requiredRule" />
           <v-text-field label="Кол-во мест" v-model="booking.seatsCount" :rules="countQuantityRule" type="number" />
-          <v-select label="Остановка посадки" :items="stations" item-text="name" item-value="id" v-model="booking.stationFromId" />
-          <v-select label="Остановка высадки" :items="stations" item-text="name" item-value="id" v-model="booking.stationToId" />
+          <v-select label="Остановка посадки" :items="trip.stations" item-text="name" item-value="id" v-model="booking.stationFromId" :rules="requiredRule" />
+          <v-select label="Остановка высадки" :items="trip.stations" item-text="name" item-value="id" v-model="booking.stationToId" :rules="requiredRule" />
         </v-form>
         <div class="align-center">
           <v-btn color="red" class="white--text" @click="toggleBookingModal">Отмена</v-btn>
@@ -369,7 +369,8 @@ export default {
 			status: {
 			  'PENDING': 'Оплата',
 				'CASH': 'Наличка',
-				'SCANNED': 'Отсканировано'
+				'SCANNED': 'Отсканировано',
+				'OTHER': 'Иное'
 			},
 			tripStatus: {
 			  'PENDING': 'В ожидании',
@@ -580,7 +581,7 @@ export default {
 		async getBookings(trip) {
 	    try {
 	      this.bookingMode = 'list';
-	      this.trip = trip;
+	      this.trip = Object.assign({}, trip, {stations: trip.itinerary.items.map((item) => item.station)});
 				await this.$store.dispatch('LoaderStore/setLoader', true);
 	      const resp = await BookingService.fetchAllTripBookings(trip.id);
 				this.bookingList = resp?.data?.bookings?.reverse();
