@@ -289,6 +289,7 @@
           <v-text-field label="Имя" v-model="booking.name" :rules="requiredRule" />
           <v-text-field label="Фамилия" v-model="booking.surname" :rules="requiredRule" />
           <v-text-field label="Кол-во мест" v-model="booking.seatsCount" :rules="countQuantityRule" type="number" />
+          <v-text-field label="Сумма" v-model="booking.otherAmount" :rules="requiredRule" type="number" />
           <v-select label="Остановка посадки" :items="trip.stations" item-text="name" item-value="id" v-model="booking.stationFromId" :rules="requiredRule" />
           <v-select label="Остановка высадки" :items="trip.stations" item-text="name" item-value="id" v-model="booking.stationToId" :rules="requiredRule" />
         </v-form>
@@ -363,6 +364,7 @@ export default {
 				seatsCount: '',
 				name: '',
 				surname: '',
+        otherAmount: '',
 				stationFromId: 0,
 				stationToId: 0
 			},
@@ -640,7 +642,7 @@ export default {
 				const itineraries = trip?.itinerary?.items;
 				const lastIndex = itineraries.length - 1;
 				const tripName = itineraries[0]?.station?.name + ' - ' + itineraries[lastIndex]?.station?.name;
-				return `${tripName}, ${trip.dateAndTime}`;
+				return `${tripName}, ${trip.dateAndTime || ''}`;
 			}
 		},
 
