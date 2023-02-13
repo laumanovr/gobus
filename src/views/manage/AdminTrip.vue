@@ -157,6 +157,13 @@
           <v-text-field label="Цена" type="number" v-model="trip.price" :rules="requiredRule"/>
         </template>
         <v-select
+          label="Перевозчик"
+          :items="carriers"
+          item-text="carrierName"
+          item-value="id"
+          v-model="trip.carrierId"
+        />
+        <v-select
           label="Водитель"
           :items="drivers"
           item-text="fullName"
@@ -301,6 +308,7 @@ import {DriverService} from "@/services/driver.service";
 import {TransportService} from "@/services/transport.service";
 import {BookingService} from "@/services/booking.service";
 import {StationService} from "@/services/station.service";
+import {CarrierService} from "@/services/carrier.service";
 import DeleteMixin from "@/mixin/DeleteMixin";
 
 export default {
@@ -318,6 +326,7 @@ export default {
 			drivers: [],
 			transports: [],
 			stations: [],
+			carriers: [],
 			mode: '',
 			bookingMode: 'list',
 			tripList: [],
@@ -331,6 +340,7 @@ export default {
 				itineraryId: '',
 				driverId: '',
 				vehicleId: '',
+				carrierId: '',
 				price: '',
 				startTimes: [],
 				startTime: '',
@@ -380,6 +390,7 @@ export default {
 	  await this.getDrivers();
 	  await this.getTransports();
 	  await this.getStationList();
+	  await this.getCarrierList();
 	},
 	methods: {
 	  async getStationList() {
@@ -403,6 +414,17 @@ export default {
 			} catch (err) {
 	      this.$toast.error(err);
 				await this.$store.dispatch('LoaderStore/setLoader', false);
+			}
+		},
+		async getCarrierList() {
+			try {
+				this.$store.dispatch('LoaderStore/setLoader', true);
+				const resp = await CarrierService.fetchCarrierList();
+				this.carriers = resp.data?.carriers;
+				this.$store.dispatch('LoaderStore/setLoader', false);
+			} catch (err) {
+				this.$store.dispatch('LoaderStore/setLoader', false);
+				this.$toast.error(err);
 			}
 		},
 		onFilterTrips() {
@@ -487,6 +509,7 @@ export default {
 		    this.trip.status = '';
 		    this.trip.startTimes = [];
 				this.timeStart = '';
+				this.trip.carrierId = '';
 			}
 		  if (mode && mode === 'update') {
 				this.trip.id = trip.id;
@@ -494,6 +517,7 @@ export default {
 				this.trip.vehicleId = trip.vehicle.id;
 				this.trip.isSelected = trip.isSelected;
 				this.trip.status = trip.status;
+				this.trip.carrierId = trip?.carrier?.id;
 				this.dateStart = new Date(trip.startTime).toLocaleDateString('ru');
 				this.pickerDate = new Date(trip.startTime).toLocaleDateString('en-CA');
 				this.timeStart = new Date(trip.startTime).toLocaleTimeString('ru');
