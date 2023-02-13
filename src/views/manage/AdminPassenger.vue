@@ -80,6 +80,7 @@
           <th>Дата Регистрации</th>
           <th>Номер</th>
           <th>Почта</th>
+          <th><div>Воучер</div><div>баланс</div></th>
         </tr>
         </thead>
         <tbody>
@@ -91,6 +92,7 @@
           <td>{{ new Date(passenger.createdAt).toLocaleDateString('ru') }}</td>
           <td>{{ passenger.mobileNumber }}</td>
           <td>{{ passenger.email }}</td>
+          <td><span class="link-dashed" @click="toggleVoucherModal(passenger)">{{ passenger.voucherBalance }}</span></td>
         </tr>
         </tbody>
       </table>
@@ -103,6 +105,16 @@
       />
     </template>
     <h3 class="d-flex justify-center" v-else>Пусто</h3>
+
+    <modal name="voucher-modal" height="auto">
+      <div class="align-center"><h3>Изменить баланс воучера</h3></div>
+      <div class="align-center"><h4>{{selectedUser.surname+' '+selectedUser.name}}</h4></div>
+      <v-text-field label="Баланс" v-model.number="voucher.amount" type="number"/>
+      <div class="align-center">
+        <v-btn color="red" class="white--text" @click="toggleVoucherModal">Отмена</v-btn>
+        <v-btn color="success" @click="submitVoucher">Подтвердить</v-btn>
+      </div>
+    </modal>
   </div>
 </template>
 
@@ -127,7 +139,9 @@ export default {
 				email: '',
 				showDatePicker: false
 			},
-			queryParam: ''
+			queryParam: '',
+			selectedUser: {},
+			voucher: {amount: ''}
 		};
 	},
 	mounted() {
@@ -194,6 +208,27 @@ export default {
 				this.queryParam = date + surname + name + email;
 				this.page = 1;
 				this.getPassengerList();
+			}
+		},
+		toggleVoucherModal(user) {
+		  if (user) {
+				this.selectedUser = user;
+				this.voucher.amount = user.voucherBalance;
+			}
+		  this.$modal.toggle('voucher-modal');
+		},
+		async submitVoucher() {
+		  if (this.voucher.amount) {
+		    try {
+		      await this.$store.dispatch('LoaderStore/setLoader', true);
+					await PassengerService.editVoucherBalance(this.selectedUser.id, this.voucher);
+					await this.getPassengerList();
+					this.$toast.success('Баланс успешно изменен');
+					this.toggleVoucherModal();
+				} catch (err) {
+					this.$toast.error(err);
+					await this.$store.dispatch('LoaderStore/setLoader', false);
+				}
 			}
 		}
 	}
