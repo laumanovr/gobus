@@ -5,6 +5,10 @@
         {{role === 'admin' ? 'Admin GoBus' : 'Партнер GoBus'}}
         <div class="profile-email">{{currentUser.email}}</div>
       </div>
+      <div class="sign-out" @click="logOut">
+        <v-icon color="red" class="icon-logout">mdi-logout</v-icon>
+        <span>Выход</span>
+      </div>
     </div>
     <div class="tabs">
       <div
@@ -17,10 +21,6 @@
         <v-icon :color="isActive(item) ? 'white' : 'blue darken-1'">{{ item.icon }}</v-icon>
         <span>{{ item.name }}</span>
       </div>
-    </div>
-    <div class="sign-out" @click="logOut">
-      <v-icon color="red" class="icon-logout">mdi-logout</v-icon>
-      <span>Выход</span>
     </div>
   </div>
 </template>
@@ -77,9 +77,19 @@ export default {
 						icon: 'mdi-currency-usd'
 					},
 					{
+						name: 'Учет',
+						route: '/manage/accounting',
+						icon: 'mdi-currency-usd'
+					},
+					{
 						name: 'Партнеры',
 						route: '/manage/partners',
 						icon: 'mdi-handshake-outline'
+					},
+					{
+						name: 'Перевозчики',
+						route: '/manage/carrier',
+						icon: 'mdi-train-car'
 					}
 				],
 				partner: [
@@ -133,6 +143,17 @@ export default {
     }
   }
   .tabs {
+    height: 77%;
+    overflow-y: auto;
+    padding-bottom: 15px;
+    &::-webkit-scrollbar {
+      width: 4px;
+      height: 0;
+      background: transparent;
+    }
+    &::-webkit-scrollbar-thumb {
+      background-color: #1E88E5;
+    }
     .tab {
       font-weight: 500;
       font-size: 16px;
@@ -145,6 +166,7 @@ export default {
         background: #1E88E5;
         color: #fff;
         border-radius: 4px;
+        margin-right: 4px;
       }
       span {
         margin-left: 25px;
@@ -152,13 +174,11 @@ export default {
     }
   }
   .sign-out {
-    position: fixed;
-    bottom: 0;
-    width: 225px;
+    width: 227px;
     display: flex;
     justify-content: center;
     border-top: 1px solid #A6ACBB;
-    padding: 12px 0;
+    padding: 11px 0 7px;
     font-weight: 500;
     font-size: 16px;
     cursor: pointer;
