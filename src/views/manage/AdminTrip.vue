@@ -311,6 +311,7 @@ import {BookingService} from "@/services/booking.service";
 import {StationService} from "@/services/station.service";
 import {CarrierService} from "@/services/carrier.service";
 import DeleteMixin from "@/mixin/DeleteMixin";
+import {format} from 'date-fns';
 
 export default {
 	mixins: [DeleteMixin],
@@ -336,7 +337,7 @@ export default {
 			showDatePicker: false,
 			pickerDate: '',
 			dateStart: new Date().toLocaleDateString('ru-RU'),
-			todayDate: new Date().toLocaleDateString('en-CA'),
+			todayDate: format(new Date(), 'yyyy-MM-dd'),
 			trip: {
 				itineraryId: '',
 				driverId: '',
