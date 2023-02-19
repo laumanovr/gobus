@@ -3,6 +3,17 @@
     <h2>Учет</h2>
 
     <div class="d-flex align-center">
+      <v-select
+        dense
+        solo
+        hide-details
+        class="short"
+        label="Рейс"
+        :items="itineraries"
+        :item-text="showItineraryName"
+        item-value="id"
+        v-model="filter.itineraryId"
+      />
       <v-menu
         v-model="filter.showDatePickerFrom"
         :close-on-content-click="false"
@@ -57,6 +68,17 @@
           @input="onFilterDate('showDatePickerTo', 'pickerDateTo', 'formattedDateTo')"
         />
       </v-menu>
+      <v-text-field
+        v-mask="'##:##'"
+        placeholder="00:00"
+        label="Время"
+        v-model="filter.time"
+        class="time mr-3"
+        hide-details
+        solo
+        dense
+        style="max-width: 70px"
+      />
       <v-select
         dense
         solo
@@ -174,12 +196,14 @@
 <script>
 import {AnalyticsService} from "@/services/analytics.service";
 import {DriverService} from "@/services/driver.service";
+import {ItineraryService} from "@/services/itinerary.service";
 
 export default {
 	data() {
 		return {
 			accountingData: {trips: []},
 			drivers: [],
+			itineraries: [],
 			queryParam: '',
 			page: 1,
 			totalPages: 0,
@@ -190,7 +214,9 @@ export default {
 				formattedDateFrom: '',
 				formattedDateTo: '',
 				showDatePickerFrom: false,
-				showDatePickerTo: false
+				showDatePickerTo: false,
+				itineraryId: '',
+				time: ''
 			}
 		};
 	},
@@ -198,6 +224,7 @@ export default {
 		await this.$store.dispatch('LoaderStore/setLoader', true);
 		await this.getAccountingData();
 		await this.getDriverList();
+		await this.getItineraryList();
 	},
 	methods: {
 		async getAccountingData() {
@@ -211,6 +238,17 @@ export default {
 				this.$toast.error(err);
 			}
 		},
+		async getItineraryList() {
+			try {
+				await this.$store.dispatch('LoaderStore/setLoader', true);
+				const resp = await ItineraryService.fetchItineraryList();
+				this.itineraries = resp?.data?.itineraries;
+				await this.$store.dispatch('LoaderStore/setLoader', false);
+			} catch (err) {
+				this.$toast.error(err);
+				await this.$store.dispatch('LoaderStore/setLoader', false);
+			}
+		},
 		async getDriverList() {
 			try {
 				await this.$store.dispatch('LoaderStore/setLoader', true);
@@ -221,6 +259,9 @@ export default {
 				await this.$store.dispatch('LoaderStore/setLoader', false);
 				this.$toast.error(err);
 			}
+		},
+		showItineraryName(itinerary) {
+		  return itinerary?.items[0]?.station?.name +' - '+ itinerary?.items?.at(-1)?.station?.name;
 		},
 		showDateTime(unFormattedDate) {
 			const date = new Date(unFormattedDate);
@@ -234,7 +275,9 @@ export default {
 			const dateFrom = this.filter.pickerDateFrom ? `&date[gte]=${this.filter.pickerDateFrom}` : '';
 			const dateTo = this.filter.pickerDateTo ? `&date[lt]=${this.filter.pickerDateTo}` : '';
 			const driverId = this.filter.driverId ? `&driverId=${this.filter.driverId}` : '';
-			this.queryParam = `&page=${this.page}${dateFrom}${dateTo}${driverId}`;
+			const itineraryId = this.filter.itineraryId ? `&itineraryId=${this.filter.itineraryId}` : '';
+			const time = this.filter.time ? `&time=${this.filter.time}` : '';
+			this.queryParam = `&page=${this.page}${itineraryId}${dateFrom}${dateTo}${time}${driverId}`;
 			this.getAccountingData();
 		},
 		onFilterAccounting() {
@@ -242,7 +285,9 @@ export default {
 			const dateFrom = this.filter.pickerDateFrom ? `&date[gte]=${this.filter.pickerDateFrom}` : '';
 			const dateTo = this.filter.pickerDateTo ? `&date[lt]=${this.filter.pickerDateTo}` : '';
 			const driverId = this.filter.driverId ? `&driverId=${this.filter.driverId}` : '';
-			this.queryParam = `${dateFrom}${dateTo}${driverId}`;
+			const itineraryId = this.filter.itineraryId ? `&itineraryId=${this.filter.itineraryId}` : '';
+			const time = this.filter.time ? `&time=${this.filter.time}` : '';
+			this.queryParam = `${itineraryId}${dateFrom}${dateTo}${time}${driverId}`;
 			this.getAccountingData();
 		}
 	}
@@ -267,6 +312,9 @@ export default {
     .label {
       font-size: 14px;
     }
+  }
+  .time {
+    background: #fff;
   }
 }
 </style>
