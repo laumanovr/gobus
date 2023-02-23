@@ -218,17 +218,15 @@ export default {
 		  this.$modal.toggle('voucher-modal');
 		},
 		async submitVoucher() {
-		  if (this.voucher.amount) {
-		    try {
-		      await this.$store.dispatch('LoaderStore/setLoader', true);
-					await PassengerService.editVoucherBalance(this.selectedUser.id, this.voucher);
-					await this.getPassengerList();
-					this.$toast.success('Баланс успешно изменен');
-					this.toggleVoucherModal();
-				} catch (err) {
-					this.$toast.error(err);
-					await this.$store.dispatch('LoaderStore/setLoader', false);
-				}
+			try {
+				await this.$store.dispatch('LoaderStore/setLoader', true);
+				await PassengerService.editVoucherBalance(this.selectedUser.id, this.voucher);
+				await this.getPassengerList();
+				this.$toast.success('Баланс успешно изменен');
+				this.toggleVoucherModal();
+			} catch (err) {
+				this.$toast.error(err);
+				await this.$store.dispatch('LoaderStore/setLoader', false);
 			}
 		}
 	}
