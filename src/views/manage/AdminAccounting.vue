@@ -1,6 +1,18 @@
 <template>
   <div class="admin-accounting">
-    <h2>Учет</h2>
+    <div class="d-flex justify-space-between align-center">
+      <h2>Учет</h2>
+      <ExcelSaver
+        ref="excel"
+        :general-headers="generalHeaders"
+        :general-rows="generalRows"
+        :main-headers="mainHeaders"
+        :main-rows="mainRows"
+        :name="fileName"
+        @onClick="exportToExcel"
+      />
+    </div>
+    <div class="vertical-space"></div>
 
     <div class="d-flex align-center">
       <v-select
@@ -197,8 +209,12 @@
 import {AnalyticsService} from "@/services/analytics.service";
 import {DriverService} from "@/services/driver.service";
 import {ItineraryService} from "@/services/itinerary.service";
+import ExcelSaver from "@/components/ExcelSaver";
 
 export default {
+	components: {
+		ExcelSaver
+	},
 	data() {
 		return {
 			accountingData: {trips: []},
@@ -217,7 +233,12 @@ export default {
 				showDatePickerTo: false,
 				itineraryId: '',
 				time: ''
-			}
+			},
+			generalHeaders: [],
+			generalRows: [],
+			mainHeaders: [],
+			mainRows: [],
+			fileName: ''
 		};
 	},
 	async mounted() {
@@ -289,6 +310,62 @@ export default {
 			const time = this.filter.time ? `&time=${this.filter.time}` : '';
 			this.queryParam = `${itineraryId}${dateFrom}${dateTo}${time}${driverId}`;
 			this.getAccountingData();
+		},
+		exportToExcel() {
+		  this.fileName = `стр-${this.page},${this.filter.formattedDateFrom}-${this.filter.formattedDateTo}`;
+		  this.generalHeaders = [
+		    'Всего \n кол-во',
+		    'Всего \n сумма',
+		    'Всего \n кол-во безнал',
+		    'Всего \n сумма безнал',
+		    'Всего \n кол-во нал',
+		    'Всего \n сумма нал',
+		    'Всего \n кол-во иное',
+		    'Всего \n сумма иное'
+			];
+			this.generalRows = [
+				[
+					this.accountingData.totalBookingsCount,
+					this.accountingData.totalBookingsRevenue,
+					this.accountingData.cashlessBookingsCount,
+					this.accountingData.cashlessBookingsRevenue,
+					this.accountingData.cashBookingsCount,
+					this.accountingData.cashBookingsRevenue,
+					this.accountingData.otherBookingsCount,
+					this.accountingData.otherBookingsRevenue
+				]
+			];
+		  this.mainHeaders = [
+		    'Рейс',
+		    'Дата \n рейса',
+		    'Водитель',
+		    'Кол-во \n наличных',
+		    'Сумма \n наличных',
+		    'Кол-во \n безнал',
+		    'Сумма \n безнал',
+		    'Кол-во \n иное',
+		    'Сумма \n иное',
+		    'Всего \n кол-во',
+		    'Всего \n сумма',
+			];
+			this.mainRows = this.accountingData?.trips.map((item) => {
+				return [
+					item?.itinerary?.items[0]?.station?.name + ' - ' + item?.itinerary?.items?.at(-1)?.station?.name,
+					this.showDateTime(item.startTime),
+					item.driver.surname + ' ' + item.driver.name,
+					item.cashBookingsCount,
+					item.cashBookingsRevenue,
+					item.cashlessBookingsCount,
+					item.cashlessBookingsRevenue,
+					item.otherBookingsCount,
+					item.otherBookingsRevenue,
+					item.totalBookingsCount,
+					item.totalBookingsRevenue
+				];
+			});
+		  this.$nextTick(() => {
+		    this.$refs.excel.exportExcel();
+			});
 		}
 	}
 };
