@@ -313,10 +313,10 @@ export default {
 			this.queryParam = `${itineraryId}${dateFrom}${dateTo}${time}${driverId}`;
 			this.getAccountingData();
 		},
-    onClearSelect(type) {
+		onClearSelect(type) {
 		  this.filter[type] = '';
 		  this.onFilterAccounting();
-    },
+		},
 		exportToExcel() {
 		  this.fileName = `стр-${this.page},${this.filter.formattedDateFrom}-${this.filter.formattedDateTo}`;
 		  this.generalHeaders = [
