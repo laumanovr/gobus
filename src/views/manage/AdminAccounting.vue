@@ -101,6 +101,8 @@
         :item-text="(driver) => (driver.surname+' '+driver.name)"
         item-value="id"
         v-model="filter.driverId"
+        clearable
+        @click:clear="onClearSelect('driverId')"
       />
       <v-btn color="primary" @click="onFilterAccounting">Поиск</v-btn>
     </div>
@@ -311,6 +313,10 @@ export default {
 			this.queryParam = `${itineraryId}${dateFrom}${dateTo}${time}${driverId}`;
 			this.getAccountingData();
 		},
+    onClearSelect(type) {
+		  this.filter[type] = '';
+		  this.onFilterAccounting();
+    },
 		exportToExcel() {
 		  this.fileName = `стр-${this.page},${this.filter.formattedDateFrom}-${this.filter.formattedDateTo}`;
 		  this.generalHeaders = [
