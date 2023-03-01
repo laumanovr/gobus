@@ -25,6 +25,8 @@
         :item-text="showItineraryName"
         item-value="id"
         v-model="filter.itineraryId"
+        clearable
+        @click:clear="onClearSelect('itineraryId')"
       />
       <v-menu
         v-model="filter.showDatePickerFrom"
