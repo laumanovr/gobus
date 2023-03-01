@@ -104,7 +104,7 @@
         <tr v-for="(trip, i) in tripList" :key="trip.id">
           <td>{{ ((page - 1) * 10) + (i + 1) }}</td>
           <td>
-            <div :class="{'is-colored': trip.isSelected}">{{ trip.itinerary.items[0].station.name +' - '+ trip.itinerary.items.at(-1).station.name }}</div>
+            <div :class="{'is-colored': trip.isSelected}">{{ trip.itinerary?.items[0]?.station?.name +' - '+ trip.itinerary?.items?.at(-1).station?.name }}</div>
           </td>
           <td>{{ trip.dateAndTime }}</td>
           <td>{{ trip.driver.surname + ' ' + trip.driver.name }}</td>
@@ -468,8 +468,8 @@ export default {
 				await this.$store.dispatch('LoaderStore/setLoader', true);
 				const resp = await ItineraryService.fetchItineraryList();
 				this.itineraries = resp?.data?.itineraries.map((itinerary) => {
-					const last = itinerary.items.length - 1;
-					itinerary.itineraryName = `${itinerary.items[0]?.station?.name} - ${itinerary.items[last]?.station?.name}`;
+					const last = itinerary?.items.length - 1;
+					itinerary.itineraryName = `${itinerary?.items[0]?.station?.name} - ${itinerary?.items[last]?.station?.name}`;
 					return itinerary;
 				});
 				await this.$store.dispatch('LoaderStore/setLoader', false);
@@ -561,12 +561,14 @@ export default {
 				try {
 	        await this.$store.dispatch('LoaderStore/setLoader', true);
 					const resp = await TripService[this.mode](this.trip);
+					const freshTrip = resp.data.trip;
 	        this.$toast.success(this.mode === 'create' ? 'Рейс создан!' : 'Рейс обновлен!');
 					if (this.mode === 'update') {
 						this.tripList = this.tripList.map((trip) => {
 							if (trip?.id === resp?.data?.trip?.id) {
-								trip = resp.data.trip;
-								trip.dateAndTime = new Date(trip.startTime).toLocaleString('ru').slice(0, 17);
+							  trip.driver = freshTrip.driver;
+							  trip.startTime = freshTrip.startTime;
+								trip.dateAndTime = new Date(freshTrip.startTime).toLocaleString('ru').slice(0, 17);
 							}
 							return trip;
 						});
@@ -584,7 +586,7 @@ export default {
 		async getBookings(trip) {
 	    try {
 	      this.bookingMode = 'list';
-	      this.trip = Object.assign({}, trip, {stations: trip.itinerary.items.map((item) => item.station)});
+	      this.trip = Object.assign({}, trip, {stations: trip.itinerary?.items.map((item) => item.station)});
 				await this.$store.dispatch('LoaderStore/setLoader', true);
 	      const resp = await BookingService.fetchAllTripBookings(trip.id);
 				this.bookingList = resp?.data?.bookings?.reverse();
