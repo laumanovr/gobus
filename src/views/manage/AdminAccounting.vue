@@ -319,8 +319,13 @@ export default {
 		  this.filter[type] = '';
 		  this.onFilterAccounting();
 		},
-		exportToExcel() {
-		  this.fileName = `стр-${this.page},${this.filter.formattedDateFrom}-${this.filter.formattedDateTo}`;
+		async exportToExcel() {
+		  if (!this.queryParam.includes('date[gte]') || !this.queryParam.includes('date[lt]')) {
+		    this.$toast.info('Сначала выберите дату от и до, и нажмите поиск!');
+		    return;
+			}
+		  await this.$store.dispatch('LoaderStore/setLoader', true);
+		  this.fileName = `${this.filter.formattedDateFrom}-${this.filter.formattedDateTo}`;
 		  this.generalHeaders = [
 		    'Всего \n кол-во',
 		    'Всего \n сумма',
@@ -356,24 +361,31 @@ export default {
 		    'Всего \n кол-во',
 		    'Всего \n сумма',
 			];
-			this.mainRows = this.accountingData?.trips.map((item) => {
-				return [
-					item?.itinerary?.items[0]?.station?.name + ' - ' + item?.itinerary?.items?.at(-1)?.station?.name,
-					this.showDateTime(item.startTime),
-					item.driver.surname + ' ' + item.driver.name,
-					item.cashBookingsCount,
-					item.cashBookingsRevenue,
-					item.cashlessBookingsCount,
-					item.cashlessBookingsRevenue,
-					item.otherBookingsCount,
-					item.otherBookingsRevenue,
-					item.totalBookingsCount,
-					item.totalBookingsRevenue
-				];
-			});
-		  this.$nextTick(() => {
-		    this.$refs.excel.exportExcel();
-			});
+		  try {
+				const resp = await AnalyticsService.fetchTripAccounting(this.queryParam, this.accountingData.count);
+				this.mainRows = resp?.trips.map((item) => {
+					return [
+						item?.itinerary?.items[0]?.station?.name + ' - ' + item?.itinerary?.items?.at(-1)?.station?.name,
+						this.showDateTime(item.startTime),
+						item.driver.surname + ' ' + item.driver.name,
+						item.cashBookingsCount,
+						item.cashBookingsRevenue,
+						item.cashlessBookingsCount,
+						item.cashlessBookingsRevenue,
+						item.otherBookingsCount,
+						item.otherBookingsRevenue,
+						item.totalBookingsCount,
+						item.totalBookingsRevenue
+					];
+				});
+				this.$nextTick(() => {
+					this.$refs.excel.exportExcel();
+					this.$store.dispatch('LoaderStore/setLoader', false);
+				});
+			} catch (err) {
+		    this.$toast.error(err);
+				await this.$store.dispatch('LoaderStore/setLoader', false);
+			}
 		}
 	}
 };
