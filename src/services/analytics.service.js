@@ -9,8 +9,8 @@ export class AnalyticsService {
 		return sendGetRequest(url);
 	}
 
-	static fetchTripAccounting(queryParam='') {
-	  const url = `trips/analytics?limit=20${queryParam}`;
+	static fetchTripAccounting(queryParam='', count=20) {
+	  const url = `trips/analytics?limit=${count}${queryParam}`;
 	  return sendGetRequest(url);
 	}
 }
