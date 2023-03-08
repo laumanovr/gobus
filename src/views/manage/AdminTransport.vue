@@ -20,6 +20,7 @@
         <td>{{ transport.plateNumber }}</td>
         <td>
           <v-icon color="primary" class="action-icon" @click="toggleTransportModal('update', transport)">mdi-lead-pencil</v-icon>
+          <v-icon color="green" class="ml-2 action-icon" @click="toggleSeatsModal(transport)">mdi-car</v-icon>
         </td>
       </tr>
       </tbody>
@@ -37,6 +38,33 @@
       <div class="align-center">
         <v-btn color="red" class="white--text" @click="toggleTransportModal">Отмена</v-btn>
         <v-btn color="success" @click="submitTransport">Подтвердить</v-btn>
+      </div>
+    </modal>
+
+    <!--SEATS MODAL-->
+    <modal name="seatsModal" class="seats-modal" height="auto">
+      <div class="align-center">
+        <h3>Цены на сидячие места</h3>
+      </div>
+      <div class="align-center">
+        <h4>{{selectedTransport?.name}}</h4>
+      </div>
+      <div class="align-right">
+        <v-btn color="primary" small @click="addSeatPrice">+Добавить</v-btn>
+      </div>
+      <div class="vertical-space"></div>
+      <v-form ref="seatsForm">
+        <div class="d-flex" v-for="(item, i) in seatsPrice.seatsArrangement" :key="i">
+          <v-text-field type="number" class="w15p mr-3" :rules="requiredRule" label="От" v-model="item.start" outlined dense />
+          <v-text-field type="number" class="w15p mr-3" :rules="requiredRule" label="До" v-model="item.end" outlined dense />
+          <v-text-field type="number" class="w15p mr-1" :rules="requiredRule" label="Цена" v-model="item.addPrice" outlined dense />
+          <v-icon color="red" class="action-icon" title="Удалить" style="height: 40px" @click="deleteSeat(i)">mdi-delete</v-icon>
+        </div>
+      </v-form>
+      <hr>
+      <div class="align-center">
+        <v-btn color="red white--text" @click="toggleSeatsModal">Отмена</v-btn>
+        <v-btn color="success" @click="submitSeatsArrangement">Подтвердить</v-btn>
       </div>
     </modal>
   </div>
@@ -57,6 +85,10 @@ export default {
 				name: '',
 				capacity: 0,
 				plateNumber: ''
+			},
+			selectedTransport: {},
+			seatsPrice: {
+				seatsArrangement: []
 			}
 		};
 	},
@@ -105,7 +137,49 @@ export default {
 					this.$store.dispatch('LoaderStore/setLoader', false);
 				}
 			}
+		},
+		toggleSeatsModal(transport) {
+			if (transport) {
+				this.selectedTransport = transport;
+				const seats = JSON.parse(JSON.stringify(transport)).seatsArrangement;
+				this.seatsPrice.seatsArrangement = seats.length ? seats : [];
+			}
+		  this.$modal.toggle('seatsModal');
+		},
+		addSeatPrice() {
+		  this.seatsPrice.seatsArrangement.push({
+				start: '',
+				end: '',
+				addPrice: 0
+			});
+		},
+		deleteSeat(index) {
+		  this.seatsPrice.seatsArrangement.splice(index, 1);
+		},
+		async submitSeatsArrangement() {
+			if (this.$refs.seatsForm.validate()) {
+				try {
+					await this.$store.dispatch('LoaderStore/setLoader', true);
+					await TransportService.modifySeatPrice(this.selectedTransport.id, this.seatsPrice);
+					await this.getTransportList();
+					this.toggleSeatsModal();
+					await this.$store.dispatch('LoaderStore/setLoader', false);
+					this.$toast.success('Успешно обновлено!');
+				} catch (err) {
+					this.$toast.error(err);
+					await this.$store.dispatch('LoaderStore/setLoader', false);
+				}
+			}
 		}
 	}
 };
 </script>
+
+<style lang="scss">
+.seats-modal {
+  .vm--modal {
+    overflow-y: auto;
+    max-height: 90vh;
+  }
+}
+</style>
