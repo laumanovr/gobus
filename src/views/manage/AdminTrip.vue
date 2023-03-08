@@ -350,7 +350,7 @@ export default {
 				availableSeatsCount: 0,
 				isSelected: false,
 				status: '',
-        isSeatingUsed: false
+				isSeatingUsed: false
 			},
 			filter: {
 			  date: '',
