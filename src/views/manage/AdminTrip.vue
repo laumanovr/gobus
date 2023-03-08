@@ -140,7 +140,7 @@
     </template>
 
     <!--Trip Modal-->
-    <modal name="tripModal" height="auto">
+    <modal name="tripModal" class="trip-modal" height="auto">
       <div class="align-center">
         <h3>{{ mode === 'create' ? 'Добавить Рейс' : 'Редактировать Рейс' }}</h3>
       </div>
@@ -239,6 +239,7 @@
         </v-menu>
         <v-text-field v-mask="'##:##'" placeholder="00:00" label="Время выезда" v-model="timeStart" :rules="requiredRule"/>
         <v-switch class="color-switcher" v-model="trip.isSelected" label="Выделить цветом" dense/>
+        <v-switch class="seat-switch" v-model="trip.isSeatingUsed" label="Включить расположение" dense/>
       </v-form>
       <div class="align-center">
         <v-btn color="red" class="white--text" @click="toggleTripModal">Отмена</v-btn>
@@ -348,7 +349,8 @@ export default {
 				startTime: '',
 				availableSeatsCount: 0,
 				isSelected: false,
-				status: ''
+				status: '',
+        isSeatingUsed: false
 			},
 			filter: {
 			  date: '',
@@ -514,6 +516,7 @@ export default {
 		    this.trip.startTimes = [];
 				this.timeStart = '';
 				this.trip.carrierId = '';
+				this.trip.isSeatingUsed = false;
 			}
 		  if (mode && mode === 'update') {
 				this.trip.id = trip.id;
@@ -522,6 +525,7 @@ export default {
 				this.trip.isSelected = trip.isSelected;
 				this.trip.status = trip.status;
 				this.trip.carrierId = trip?.carrier?.id;
+				this.trip.isSeatingUsed = trip.isSeatingUsed;
 				this.dateStart = new Date(trip.startTime).toLocaleDateString('ru');
 				this.pickerDate = new Date(trip.startTime).toLocaleDateString('en-CA');
 				this.timeStart = new Date(trip.startTime).toLocaleTimeString('ru');
@@ -534,6 +538,7 @@ export default {
 				this.trip.price = trip.price;
 				this.trip.status = '';
 				this.trip.isSelected = trip.isSelected;
+				this.trip.isSeatingUsed = trip.isSeatingUsed;
 				this.trip.startTimes = [];
 				this.timeStart = new Date(trip.startTime).toLocaleTimeString('ru');
 				this.mode = 'create';
@@ -568,6 +573,7 @@ export default {
 							if (trip?.id === resp?.data?.trip?.id) {
 							  trip.driver = freshTrip.driver;
 							  trip.startTime = freshTrip.startTime;
+							  trip.isSeatingUsed = freshTrip.isSeatingUsed;
 								trip.dateAndTime = new Date(freshTrip.startTime).toLocaleString('ru').slice(0, 17);
 							}
 							return trip;
@@ -685,6 +691,16 @@ export default {
   }
   .color-switcher {
     max-width: 33%;
+  }
+  .trip-modal {
+    .vm--modal {
+      overflow-y: auto;
+      max-height: 90vh;
+    }
+  }
+  .seat-switch {
+    margin-top: 0;
+    padding-top: 0;
   }
 }
 </style>
