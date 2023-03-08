@@ -64,7 +64,7 @@
       <hr>
       <div class="align-center">
         <v-btn color="red white--text" @click="toggleSeatsModal('')">Отмена</v-btn>
-        <v-btn color="success" @click="submitSeatsArrangement">Подтвердить</v-btn>
+        <v-btn color="success" :disabled="!seatsPrice.seatsArrangement.length" @click="submitSeatsArrangement">Подтвердить</v-btn>
       </div>
     </modal>
   </div>
