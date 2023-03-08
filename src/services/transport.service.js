@@ -17,4 +17,9 @@ export class TransportService {
 		const url = `vehicles/${body.id}`;
 		return sendPatchRequest(url, body);
 	}
+
+	static modifySeatPrice(id, body) {
+	  const url = `vehicles/${id}`;
+	  return sendPatchRequest(url, body);
+	}
 }
