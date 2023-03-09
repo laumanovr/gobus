@@ -200,7 +200,7 @@
             <v-combobox
               v-if="mode === 'create'"
               locale="ru-RU"
-              v-model="trip.startTimes"
+              v-model="tripStartTimes"
               multiple
               chips
               small-chips
@@ -223,7 +223,7 @@
           <v-date-picker
             v-if="mode === 'create'"
             locale="ru-RU"
-            v-model="trip.startTimes"
+            v-model="tripStartTimes"
             :min="todayDate"
             multiple
           >
@@ -339,6 +339,7 @@ export default {
 			pickerDate: '',
 			dateStart: new Date().toLocaleDateString('ru-RU'),
 			todayDate: format(new Date(), 'yyyy-MM-dd'),
+			tripStartTimes: [],
 			trip: {
 				itineraryId: '',
 				driverId: '',
@@ -514,6 +515,7 @@ export default {
 		    this.trip.price = '';
 		    this.trip.status = '';
 		    this.trip.startTimes = [];
+				this.tripStartTimes = [];
 				this.timeStart = '';
 				this.trip.carrierId = '';
 				this.trip.isSeatingUsed = false;
@@ -540,6 +542,7 @@ export default {
 				this.trip.isSelected = trip.isSelected;
 				this.trip.isSeatingUsed = trip.isSeatingUsed;
 				this.trip.startTimes = [];
+				this.tripStartTimes = [];
 				this.timeStart = new Date(trip.startTime).toLocaleTimeString('ru');
 				this.mode = 'create';
 			}
@@ -556,7 +559,7 @@ export default {
 		async submitTrip() {
 			if (this.$refs.tripForm.validate()) {
 			  if (this.mode === 'create') {
-					this.trip.startTimes = this.trip.startTimes.map((date) => {
+					this.trip.startTimes = this.tripStartTimes.map((date) => {
 						date = `${date}T${this.timeStart}`;
 						return date;
 					});
@@ -566,7 +569,7 @@ export default {
 				try {
 	        await this.$store.dispatch('LoaderStore/setLoader', true);
 					const resp = await TripService[this.mode](this.trip);
-					const freshTrip = resp.data.trip;
+					const freshTrip = resp?.data?.trip;
 	        this.$toast.success(this.mode === 'create' ? 'Рейс создан!' : 'Рейс обновлен!');
 					if (this.mode === 'update') {
 						this.tripList = this.tripList.map((trip) => {
@@ -617,7 +620,7 @@ export default {
 				try {
 					this.$store.dispatch('LoaderStore/setLoader', true);
 					const resp = await BookingService.create(this.trip.id, this.booking);
-					this.trip = resp.data.booking.trip;
+					this.trip = resp?.data?.booking?.trip;
 					this.tripList = this.tripList.map((trip) => {
 						if (trip.id === this.trip.id) {
 							trip.availableSeatsCount = this.trip.availableSeatsCount;
