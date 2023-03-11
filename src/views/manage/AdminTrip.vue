@@ -577,6 +577,11 @@ export default {
 							  trip.driver = freshTrip.driver;
 							  trip.startTime = freshTrip.startTime;
 							  trip.isSeatingUsed = freshTrip.isSeatingUsed;
+							  trip.isSelected = freshTrip.isSelected;
+							  trip.carrier = freshTrip.carrier;
+							  trip.price = freshTrip.price;
+							  trip.status = freshTrip.status;
+							  trip.vehicle = freshTrip.vehicle;
 								trip.dateAndTime = new Date(freshTrip.startTime).toLocaleString('ru').slice(0, 17);
 							}
 							return trip;
