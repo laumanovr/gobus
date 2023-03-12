@@ -94,7 +94,6 @@
           <th>Время выезда</th>
           <th>Водитель</th>
           <th>Машина</th>
-          <th>Цена</th>
           <th>Кол-во мест</th>
           <th>Статус</th>
           <th></th>
@@ -109,7 +108,6 @@
           <td>{{ trip.dateAndTime }}</td>
           <td>{{ trip.driver.surname + ' ' + trip.driver.name }}</td>
           <td>{{ trip.vehicle.name }}</td>
-          <td>{{ trip.price }}</td>
           <td>
           <span @click="getBookings(trip)" class="link-dashed">
             {{ trip.vehicle.capacity - trip.availableSeatsCount }}/{{ trip.vehicle.capacity }}
@@ -154,7 +152,6 @@
             v-model="trip.itineraryId"
             :rules="requiredRule"
           />
-          <v-text-field label="Цена" type="number" v-model="trip.price" :rules="requiredRule"/>
         </template>
         <v-select
           label="Перевозчик"
@@ -345,7 +342,7 @@ export default {
 				driverId: '',
 				vehicleId: '',
 				carrierId: '',
-				price: '',
+				price: 0,
 				startTimes: [],
 				startTime: '',
 				availableSeatsCount: 0,
@@ -512,12 +509,12 @@ export default {
 		    this.trip.itineraryId = '';
 		    this.trip.driverId = '';
 		    this.trip.vehicleId = '';
-		    this.trip.price = '';
 		    this.trip.status = '';
 		    this.trip.startTimes = [];
 				this.tripStartTimes = [];
 				this.timeStart = '';
 				this.trip.carrierId = '';
+				this.trip.isSelected = false;
 				this.trip.isSeatingUsed = false;
 			}
 		  if (mode && mode === 'update') {
@@ -537,7 +534,6 @@ export default {
 				this.trip.itineraryId = trip.itinerary.id;
 				this.trip.driverId = trip.driver.id;
 				this.trip.vehicleId = trip.vehicle.id;
-				this.trip.price = trip.price;
 				this.trip.status = '';
 				this.trip.isSelected = trip.isSelected;
 				this.trip.isSeatingUsed = trip.isSeatingUsed;
