@@ -371,7 +371,7 @@ export default {
 				otherAmount: '',
 				stationFromId: 0,
 				stationToId: 0,
-        seatNumbers: ''
+				seatNumbers: ''
 			},
 			status: {
 			  'PENDING': 'Оплата',
@@ -620,10 +620,10 @@ export default {
 			this.booking.surname = '';
 			this.booking.name = '';
 			this.booking.seatNumbers = '';
-			this.booking.otherAmount = ''
+			this.booking.otherAmount = '';
 		},
 		async createBooking() {
-      if (this.$refs.bookingForm.validate()) {
+			if (this.$refs.bookingForm.validate()) {
 				try {
 				  this.booking.seatNumbers = this.booking.seatNumbers.split(',');
 					await this.$store.dispatch('LoaderStore/setLoader', true);
