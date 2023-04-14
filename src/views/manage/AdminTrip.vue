@@ -245,7 +245,7 @@
     </modal>
 
     <!--Booking Modal-->
-    <modal name="bookingModal" height="auto" width="700px" class="booking-modal">
+    <modal name="bookingModal" height="auto" width="850px" class="booking-modal">
       <div class="align-center">
         <h3>{{ bookingMode === 'list' ? 'Список пассажиров' : 'Добавить пассажира' }}</h3>
       </div>
@@ -264,6 +264,7 @@
             <th>Посадка</th>
             <th>Высадка</th>
             <th>Статус</th>
+            <th>Номера мест</th>
           </tr>
           </thead>
           <tbody>
@@ -273,6 +274,7 @@
             <td>{{ booking.stationFrom ? booking.stationFrom.name : '' }}</td>
             <td>{{ booking.stationTo ? booking.stationTo.name : '' }}</td>
             <td>{{ status[booking.status] }}</td>
+            <td>{{ booking.seatNumbers?.toString() }}</td>
           </tr>
           </tbody>
         </table>
@@ -287,6 +289,7 @@
           <v-text-field label="Имя" v-model="booking.name" :rules="requiredRule" />
           <v-text-field label="Фамилия" v-model="booking.surname" :rules="requiredRule" />
           <v-text-field label="Кол-во мест" v-model="booking.seatsCount" :rules="countQuantityRule" type="number" />
+          <v-text-field label="Номера мест(через запятую)" v-model="booking.seatNumbers" :rules="requiredRule"/>
           <v-text-field label="Сумма" v-model="booking.otherAmount" :rules="requiredRule" type="number" />
           <v-select label="Остановка посадки" :items="trip.stations" item-text="name" item-value="id" v-model="booking.stationFromId" :rules="requiredRule" />
           <v-select label="Остановка высадки" :items="trip.stations" item-text="name" item-value="id" v-model="booking.stationToId" :rules="requiredRule" />
@@ -367,7 +370,8 @@ export default {
 				surname: '',
 				otherAmount: '',
 				stationFromId: 0,
-				stationToId: 0
+				stationToId: 0,
+        seatNumbers: ''
 			},
 			status: {
 			  'PENDING': 'Оплата',
@@ -615,11 +619,14 @@ export default {
 			this.booking.seatsCount = '';
 			this.booking.surname = '';
 			this.booking.name = '';
+			this.booking.seatNumbers = '';
+			this.booking.otherAmount = ''
 		},
 		async createBooking() {
-			if (this.$refs.bookingForm.validate()) {
+      if (this.$refs.bookingForm.validate()) {
 				try {
-					this.$store.dispatch('LoaderStore/setLoader', true);
+				  this.booking.seatNumbers = this.booking.seatNumbers.split(',');
+					await this.$store.dispatch('LoaderStore/setLoader', true);
 					const resp = await BookingService.create(this.trip.id, this.booking);
 					this.trip = resp?.data?.booking?.trip;
 					this.tripList = this.tripList.map((trip) => {
