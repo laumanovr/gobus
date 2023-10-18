@@ -90,7 +90,7 @@
           <td>{{ new Date(passenger.birthday).toLocaleDateString('ru') }}</td>
           <td>{{ gender[passenger.gender] }}</td>
           <td>{{ new Date(passenger.createdAt).toLocaleDateString('ru') }}</td>
-          <td>{{ passenger.mobileNumber }}</td>
+          <td>{{ passenger.phoneNumber }}</td>
           <td>{{ passenger.email }}</td>
           <td><span class="link-dashed" @click="toggleVoucherModal(passenger)">{{ passenger.voucherBalance }}</span></td>
         </tr>
